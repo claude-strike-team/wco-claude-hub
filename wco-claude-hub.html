@@ -1,0 +1,2940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Hub — WealthCo Strike Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --wc-black: #1F1F23;
+  --wc-white: #F6F6F6;
+  --wc-gray: #635E6E;
+  --wc-green: #2E8871;
+  --wc-blue: #6290AB;
+  --wc-yellow: #EDCF79;
+  --wc-green-dim: rgba(46,136,113,0.12);
+  --wc-green-mid: rgba(46,136,113,0.25);
+  --serif: 'DM Serif Display', serif;
+  --sans: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+  --radius: 14px;
+  --border: 1px solid rgba(31,31,35,0.09);
+  --shadow: 0 2px 16px rgba(31,31,35,0.07);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; font-size: 15px; }
+body { font-family: var(--sans); background: var(--wc-white); color: var(--wc-black); overflow-x: hidden; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(31,31,35,0.15); border-radius: 3px; }
+
+/* ── PAGE SYSTEM ── */
+.page { display: none; min-height: 100vh; }
+.page.active { display: block; }
+
+/* ══════════════════════════════
+   SIDEBAR NAV
+══════════════════════════════ */
+.layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 220px;
+  min-height: 100vh;
+  background: var(--wc-black);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  padding: 28px 0 24px;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  font-family: var(--serif);
+  font-size: 18px;
+  letter-spacing: -0.03em;
+  color: var(--wc-white);
+  padding: 0 22px 24px;
+  border-bottom: 1px solid rgba(246,246,246,0.08);
+  margin-bottom: 20px;
+}
+.sidebar-logo span { color: var(--wc-green); }
+.sidebar-subtitle {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(246,246,246,0.3);
+  margin-top: 2px;
+}
+
+.nav-section-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(246,246,246,0.25);
+  padding: 0 22px 8px;
+  margin-top: 12px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 22px;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(246,246,246,0.5);
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: -0.01em;
+  border-left: 2px solid transparent;
+  text-decoration: none;
+}
+.nav-item:hover { color: var(--wc-white); background: rgba(246,246,246,0.05); }
+.nav-item.active { color: var(--wc-white); border-left-color: var(--wc-green); background: rgba(46,136,113,0.1); }
+.nav-item .nav-icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
+.nav-item.active .nav-icon { opacity: 1; }
+
+.nav-badge {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 9px;
+  background: var(--wc-green);
+  color: var(--wc-white);
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 22px 0;
+  border-top: 1px solid rgba(246,246,246,0.08);
+}
+.sidebar-version {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: rgba(246,246,246,0.2);
+  letter-spacing: 0.06em;
+}
+
+/* ══════════════════════════════
+   MAIN CONTENT AREA
+══════════════════════════════ */
+.main { margin-left: 220px; flex: 1; }
+
+/* ── TOP BAR ── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(246,246,246,0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: var(--border);
+  padding: 0 36px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.topbar-title {
+  font-family: var(--serif);
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  color: var(--wc-black);
+}
+.topbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.topbar-date {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--wc-gray);
+}
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #2ECC71;
+  box-shadow: 0 0 6px rgba(46,204,113,0.5);
+  display: inline-block;
+}
+.status-dot.warning { background: var(--wc-yellow); box-shadow: 0 0 6px rgba(237,207,121,0.5); }
+.status-dot.error { background: #E05555; box-shadow: 0 0 6px rgba(224,85,85,0.5); }
+
+/* ══════════════════════════════
+   CONTENT PADDING
+══════════════════════════════ */
+.content { padding: 36px; }
+.content-wide { padding: 36px; }
+
+/* ══════════════════════════════
+   PAGE: DASHBOARD HOME
+══════════════════════════════ */
+
+/* Hero */
+.dashboard-hero {
+  background: var(--wc-black);
+  border-radius: var(--radius);
+  padding: 40px 44px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.dashboard-hero svg.swoops {
+  position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
+}
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wc-green);
+  margin-bottom: 14px;
+  position: relative; z-index: 2;
+}
+.hero-heading {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.5vw, 44px);
+  letter-spacing: -0.03em;
+  line-height: 1.0;
+  color: var(--wc-white);
+  margin-bottom: 14px;
+  position: relative; z-index: 2;
+}
+.hero-heading em { font-style: italic; color: var(--wc-green); }
+.hero-desc {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: rgba(246,246,246,0.55);
+  max-width: 520px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  position: relative; z-index: 2;
+  margin-bottom: 24px;
+}
+.hero-stats {
+  display: flex;
+  gap: 28px;
+  position: relative; z-index: 2;
+}
+.hero-stat-val {
+  font-family: var(--serif);
+  font-size: 28px;
+  letter-spacing: -0.03em;
+  color: var(--wc-white);
+  line-height: 1;
+}
+.hero-stat-label {
+  font-size: 11px;
+  color: rgba(246,246,246,0.35);
+  margin-top: 3px;
+  font-weight: 300;
+}
+
+/* Two-column layout */
+.dashboard-cols {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Modules grid */
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.module-card {
+  background: var(--wc-white);
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+}
+.module-card:hover {
+  border-color: rgba(46,136,113,0.35);
+  box-shadow: 0 4px 20px rgba(46,136,113,0.1);
+  transform: translateY(-2px);
+}
+.module-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent, var(--wc-green));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.module-card:hover::before { opacity: 1; }
+
+.module-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--wc-gray);
+  margin-bottom: 12px;
+}
+.module-icon-wrap {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px;
+  background: var(--icon-bg, var(--wc-green-dim));
+}
+.module-title {
+  font-family: var(--serif);
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--wc-black);
+  margin-bottom: 7px;
+}
+.module-desc {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--wc-gray);
+  font-weight: 300;
+  margin-bottom: 14px;
+}
+.module-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.module-pill {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--wc-green-dim);
+  color: var(--wc-green);
+}
+.module-pill.blue { background: rgba(98,144,171,0.12); color: var(--wc-blue); }
+.module-pill.yellow { background: rgba(237,207,121,0.15); color: #BD9521; }
+.module-tip-count {
+  font-size: 11px;
+  color: var(--wc-gray);
+  margin-left: auto;
+}
+.module-arrow {
+  font-size: 13px;
+  color: var(--wc-green);
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.module-card:hover .module-arrow { opacity: 1; transform: translateX(3px); }
+
+/* Right column */
+.right-col { display: flex; flex-direction: column; gap: 18px; }
+
+/* News widget */
+.widget {
+  background: var(--wc-white);
+  border: var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.widget-header {
+  padding: 16px 20px 12px;
+  border-bottom: var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.widget-title {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  display: flex; align-items: center; gap: 8px;
+}
+.widget-title svg { color: var(--wc-green); }
+.widget-action {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--wc-green);
+  cursor: pointer;
+  text-decoration: none;
+}
+.widget-body { padding: 4px 0; }
+
+.news-item {
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(31,31,35,0.05);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.news-item:last-child { border-bottom: none; }
+.news-item:hover { background: rgba(46,136,113,0.04); }
+.news-date {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--wc-gray);
+  margin-bottom: 4px;
+}
+.news-headline {
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--wc-black);
+  font-weight: 400;
+}
+.news-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 5px;
+  background: var(--wc-green-dim);
+  color: var(--wc-green);
+}
+.news-tag.update { background: rgba(98,144,171,0.12); color: var(--wc-blue); }
+.news-tag.feature { background: rgba(237,207,121,0.12); color: #BD9521; }
+
+/* Status tracker */
+.status-list { padding: 4px 0; }
+.status-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(31,31,35,0.05);
+  font-size: 12px;
+}
+.status-item:last-child { border-bottom: none; }
+.status-service { color: var(--wc-black); font-weight: 400; flex: 1; letter-spacing: -0.01em; }
+.status-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 5px;
+}
+.status-ok { background: rgba(46,204,113,0.1); color: #27A65A; }
+.status-warn { background: rgba(237,207,121,0.15); color: #BD9521; }
+.status-down { background: rgba(224,85,85,0.1); color: #C0453F; }
+
+/* Quick tips row */
+.quick-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 4px;
+}
+.quick-card {
+  background: var(--wc-white);
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: all 0.18s;
+}
+.quick-card:hover { box-shadow: var(--shadow); }
+.quick-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--wc-green);
+  margin-bottom: 8px;
+}
+.quick-text {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--wc-black);
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+.quick-prompt {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: var(--wc-gray);
+  background: rgba(31,31,35,0.04);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-style: italic;
+}
+
+/* ══════════════════════════════
+   PAGE: MODULE DETAIL (shared)
+══════════════════════════════ */
+.module-hero {
+  background: var(--wc-black);
+  padding: 44px 44px 40px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 32px;
+  border-radius: var(--radius);
+}
+.module-hero svg.swoops { position: absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(246,246,246,0.4);
+  cursor: pointer;
+  margin-bottom: 20px;
+  position: relative; z-index: 2;
+  border: none; background: none;
+  transition: color 0.2s;
+}
+.back-btn:hover { color: var(--wc-white); }
+.module-hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wc-green);
+  margin-bottom: 12px;
+  position: relative; z-index: 2;
+}
+.module-hero-title {
+  font-family: var(--serif);
+  font-size: clamp(26px, 3vw, 40px);
+  letter-spacing: -0.03em;
+  line-height: 1.0;
+  color: var(--wc-white);
+  margin-bottom: 12px;
+  position: relative; z-index: 2;
+}
+.module-hero-title em { font-style: italic; color: var(--wc-green); }
+.module-hero-desc {
+  font-size: 13px;
+  line-height: 1.65;
+  color: rgba(246,246,246,0.5);
+  max-width: 500px;
+  font-weight: 300;
+  position: relative; z-index: 2;
+}
+
+/* Content grid for detail pages */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  align-items: start;
+}
+.detail-main { min-width: 0; }
+.detail-aside { display: flex; flex-direction: column; gap: 16px; }
+
+/* Section block */
+.section-block {
+  background: var(--wc-white);
+  border: var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.section-block-header {
+  padding: 18px 24px;
+  border-bottom: var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.section-block-title {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.section-block-body { padding: 20px 24px; }
+
+/* Tips list */
+.tips-list { display: flex; flex-direction: column; gap: 0; }
+.tip-item {
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(31,31,35,0.06);
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.tip-item:last-child { border-bottom: none; padding-bottom: 0; }
+.tip-num {
+  font-family: var(--serif);
+  font-size: 20px;
+  color: rgba(31,31,35,0.15);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.tip-content {}
+.tip-title {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin-bottom: 5px;
+  color: var(--wc-black);
+}
+.tip-desc {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--wc-gray);
+  font-weight: 300;
+  margin-bottom: 8px;
+}
+.tip-prompt {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: var(--wc-gray);
+  background: rgba(31,31,35,0.04);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-style: italic;
+}
+
+/* Do/Don't */
+.do-dont-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.do-card, .dont-card {
+  border-radius: 10px;
+  padding: 16px;
+}
+.do-card { background: rgba(46,136,113,0.07); border: 1px solid rgba(46,136,113,0.15); }
+.dont-card { background: rgba(224,85,85,0.05); border: 1px solid rgba(224,85,85,0.12); }
+.do-head, .dont-head {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.do-head { color: var(--wc-green); }
+.dont-head { color: #C0453F; }
+.do-item, .dont-item {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--wc-black);
+  font-weight: 300;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(31,31,35,0.05);
+}
+.do-item:last-child, .dont-item:last-child { border-bottom: none; }
+
+/* Aside card */
+.aside-card {
+  background: var(--wc-white);
+  border: var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.aside-card-header {
+  padding: 14px 18px;
+  border-bottom: var(--border);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  display: flex; align-items: center; gap: 8px;
+}
+.aside-card-body { padding: 14px 18px; }
+.aside-list-item {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--wc-black);
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(31,31,35,0.05);
+  font-weight: 300;
+  display: flex; gap: 8px;
+}
+.aside-list-item:last-child { border-bottom: none; }
+.aside-list-item::before { content: '→'; color: var(--wc-green); flex-shrink: 0; }
+
+/* Highlight box */
+.highlight-box {
+  background: var(--wc-black);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 14px;
+}
+.highlight-box p {
+  font-size: 13px;
+  line-height: 1.65;
+  color: rgba(246,246,246,0.75);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+.highlight-box strong { color: var(--wc-white); font-weight: 500; }
+
+/* Band label */
+.band-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--wc-green);
+  margin-bottom: 14px;
+  display: block;
+}
+
+/* Accordion */
+.accordion-item {
+  border-bottom: 1px solid rgba(31,31,35,0.07);
+}
+.accordion-item:last-child { border-bottom: none; }
+.accordion-trigger {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 14px 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--wc-black);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  letter-spacing: -0.01em;
+  transition: color 0.18s;
+}
+.accordion-trigger:hover { color: var(--wc-green); }
+.accordion-trigger svg {
+  width: 14px; height: 14px;
+  color: var(--wc-gray);
+  transition: transform 0.25s;
+  flex-shrink: 0;
+}
+.accordion-trigger.open svg { transform: rotate(180deg); }
+.accordion-body {
+  display: none;
+  padding: 0 0 16px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--wc-gray);
+  font-weight: 300;
+}
+.accordion-body.open { display: block; }
+
+/* Tag row */
+.tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.tag {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  letter-spacing: 0.03em;
+}
+.tag-green { background: var(--wc-green-dim); color: var(--wc-green); }
+.tag-blue { background: rgba(98,144,171,0.12); color: var(--wc-blue); }
+.tag-gray { background: rgba(99,94,110,0.1); color: var(--wc-gray); }
+
+/* ══════════════════════════════
+   ANIMATIONS
+══════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(14px); }
+  to { opacity:1; transform: translateY(0); }
+}
+.fade-in { animation: fadeUp 0.45s ease both; }
+.fade-in-2 { animation: fadeUp 0.45s 0.08s ease both; }
+.fade-in-3 { animation: fadeUp 0.45s 0.16s ease both; }
+.fade-in-4 { animation: fadeUp 0.45s 0.24s ease both; }
+
+/* ══════════════════════════════
+   RESPONSIVE
+══════════════════════════════ */
+@media (max-width: 960px) {
+  .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+  .main { margin-left: 0; }
+  .dashboard-cols, .detail-grid { grid-template-columns: 1fr; }
+  .modules-grid { grid-template-columns: 1fr; }
+  .quick-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════ -->
+<div class="layout">
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    WealthCo<span>.</span>
+    <div class="sidebar-subtitle">Claude Hub</div>
+  </div>
+
+  <div class="nav-section-label">Overview</div>
+  <a class="nav-item active" onclick="showPage('dashboard')" href="#">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3zm0 7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3zm8-7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V3zm0 6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V9z"/></svg>
+    Dashboard
+  </a>
+
+  <div class="nav-section-label">Modules</div>
+  <a class="nav-item" onclick="showPage('mod-getting-started')" href="#">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 2.5a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5zM7.25 6h1.5v5h-1.5V6z"/></svg>
+    Getting started
+    <span class="nav-badge">1</span>
+  </a>
+  <a class="nav-item" onclick="showPage('mod-prompting')" href="#">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v6A1.5 1.5 0 0 1 12.5 11H9l-3 3v-3H3.5A1.5 1.5 0 0 1 2 9.5v-6z"/></svg>
+    Prompting
+    <span class="nav-badge">2</span>
+  </a>
+  <a class="nav-item" onclick="showPage('mod-use-cases')" href="#">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 4a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1zm0 4a1 1 0 0 1 1-1h8a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1zm0 4a1 1 0 0 1 1-1h6a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1z"/></svg>
+    Use cases
+    <span class="nav-badge">3</span>
+  </a>
+  <a class="nav-item" onclick="showPage('mod-tips')" href="#">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a4.5 4.5 0 0 0-2 8.5V11a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V9.5A4.5 4.5 0 0 0 8 1zM6 13h4v1a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-1z"/></svg>
+    Tips &amp; tricks
+    <span class="nav-badge">4</span>
+  </a>
+  <a class="nav-item" onclick="showPage('mod-brand')" href="#">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H3zm2 3h6v1H5V5zm0 3h6v1H5V8zm0 3h4v1H5v-1z"/></svg>
+    WCO brand skills
+    <span class="nav-badge">5</span>
+  </a>
+  <a class="nav-item" onclick="showPage('mod-ia-brand')" href="#">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M3 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H3zm6 9.5l-3-3 1.06-1.06L9 8.38l3.44-3.44L13.5 6 9 10.5z"/></svg>
+    Integrated Advisory
+    <span class="nav-badge">6</span>
+  </a>
+  <a class="nav-item" onclick="showPage('mod-usage')" href="#">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z"/></svg>
+    Usage &amp; credits
+    <span class="nav-badge">7</span>
+  </a>
+  <a class="nav-item" onclick="showPage('mod-usage-report')" href="#" style="padding-left:34px; font-size:12px;">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor" style="width:13px;height:13px;"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zM5 7a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5A.5.5 0 0 1 5 7zm0 3a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5A.5.5 0 0 1 5 10z"/></svg>
+    Usage report guide
+  </a>
+
+  <div class="nav-section-label" style="margin-top:8px;">Coming soon</div>
+  <a class="nav-item" style="opacity:0.4; pointer-events:none;" href="#">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 .5a7.5 7.5 0 1 0 0 15A7.5 7.5 0 0 0 8 .5zM4.5 7h7v2h-7V7z"/></svg>
+    Advanced workflows
+  </a>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-version">v1.0 · Apr 2026 · Strike Team</div>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════
+     MAIN
+════════════════════════════════════════ -->
+<div class="main">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Claude Hub — Dashboard</div>
+    <div class="topbar-meta">
+      <span class="topbar-date" id="topbar-date"></span>
+      <span class="status-dot" id="global-status-dot" title="All systems operational"></span>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       PAGE: DASHBOARD
+  ════════════════════════════ -->
+  <div id="page-dashboard" class="page active">
+    <div class="content">
+
+      <!-- Hero -->
+      <div class="dashboard-hero fade-in">
+        <svg class="swoops" viewBox="0 0 900 260" fill="none" preserveAspectRatio="none">
+          <path d="M-50 180 Q200 60 450 130 Q650 190 950 60" stroke="#2E8871" stroke-width="1" opacity="0.3"/>
+          <path d="M-50 220 Q250 100 500 160 Q700 210 950 100" stroke="#F6F6F6" stroke-width="0.5" opacity="0.07"/>
+          <circle cx="820" cy="60" r="140" fill="#2E8871" opacity="0.04"/>
+          <circle cx="820" cy="60" r="80" fill="#2E8871" opacity="0.04"/>
+        </svg>
+        <div class="hero-eyebrow">WealthCo Strike Team · Claude Hub</div>
+        <h1 class="hero-heading">Your Claude AI platform,<br/><em>one place.</em></h1>
+        <p class="hero-desc">Everything you need to get the most out of your Claude AI platform at WealthCo — from first login to advanced brand skills. Work through the modules at your own pace and come back as your practice deepens.</p>
+        <div class="hero-stats">
+          <div>
+            <div class="hero-stat-val">7</div>
+            <div class="hero-stat-label">Modules available</div>
+          </div>
+          <div>
+            <div class="hero-stat-val">20+</div>
+            <div class="hero-stat-label">Tips &amp; techniques</div>
+          </div>
+          <div>
+            <div class="hero-stat-val">2</div>
+            <div class="hero-stat-label">Brand skill sets</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two-col layout -->
+      <div class="dashboard-cols">
+
+        <!-- LEFT: Modules -->
+        <div>
+          <span class="band-label fade-in-2">Training modules</span>
+          <div class="modules-grid fade-in-2">
+
+            <div class="module-card" onclick="showPage('mod-getting-started')" style="--accent: #2E8871; --icon-bg: rgba(46,136,113,0.1);">
+              <div class="module-num">MODULE 01</div>
+              <div class="module-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="#2E8871"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 2.5a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5zM7.25 6h1.5v5h-1.5V6z"/></svg>
+              </div>
+              <div class="module-title">Getting<br/>started</div>
+              <div class="module-desc">What Claude is, how it works, and how to access it at WealthCo. Your first 15 minutes.</div>
+              <div class="module-meta">
+                <span class="module-pill">Foundation</span>
+                <span class="module-arrow">→</span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="showPage('mod-prompting')" style="--accent: #6290AB; --icon-bg: rgba(98,144,171,0.1);">
+              <div class="module-num">MODULE 02</div>
+              <div class="module-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="#6290AB"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v6A1.5 1.5 0 0 1 12.5 11H9l-3 3v-3H3.5A1.5 1.5 0 0 1 2 9.5v-6z"/></svg>
+              </div>
+              <div class="module-title">Prompting<br/>guide</div>
+              <div class="module-desc">How to write prompts that get sharp, useful results. Roles, context, iteration.</div>
+              <div class="module-meta">
+                <span class="module-pill blue">Core skill</span>
+                <span class="module-arrow">→</span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="showPage('mod-use-cases')" style="--accent: #2E8871; --icon-bg: rgba(46,136,113,0.1);">
+              <div class="module-num">MODULE 03</div>
+              <div class="module-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="#2E8871"><path d="M1 4a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1zm0 4a1 1 0 0 1 1-1h8a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1zm0 4a1 1 0 0 1 1-1h6a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1z"/></svg>
+              </div>
+              <div class="module-title">Use cases<br/>at WealthCo</div>
+              <div class="module-desc">Practical applications: drafting, proposals, email, analysis, client prep and more.</div>
+              <div class="module-meta">
+                <span class="module-pill">Practical</span>
+                <span class="module-arrow">→</span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="showPage('mod-tips')" style="--accent: #EDCF79; --icon-bg: rgba(237,207,121,0.1);">
+              <div class="module-num">MODULE 04</div>
+              <div class="module-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="#BD9521"><path d="M8 1a4.5 4.5 0 0 0-2 8.5V11a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V9.5A4.5 4.5 0 0 0 8 1zM6 13h4v1a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-1z"/></svg>
+              </div>
+              <div class="module-title">Tips &amp;<br/>tricks</div>
+              <div class="module-desc">All the weekly tips from the Strike Team channel, organised into one place.</div>
+              <div class="module-meta">
+                <span class="module-pill yellow">20+ tips</span>
+                <span class="module-arrow">→</span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="showPage('mod-brand')" style="--accent: #2E8871; --icon-bg: rgba(46,136,113,0.1);">
+              <div class="module-num">MODULE 05</div>
+              <div class="module-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="#2E8871"><path d="M3 2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H3zm2 3h6v1H5V5zm0 3h6v1H5V8zm0 3h4v1H5v-1z"/></svg>
+              </div>
+              <div class="module-title">WCO brand<br/>skills</div>
+              <div class="module-desc">How to use Claude's brand commands to write and design on-brand WealthCo content.</div>
+              <div class="module-meta">
+                <span class="module-pill">WCO + IA</span>
+                <span class="module-arrow">→</span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="showPage('mod-ia-brand')" style="--accent: #267173; --icon-bg: rgba(38,113,115,0.1);">
+              <div class="module-num">MODULE 06</div>
+              <div class="module-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="#267173"><path d="M3 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H3zm6 9.5l-3-3 1.06-1.06L9 8.38l3.44-3.44L13.5 6 9 10.5z"/></svg>
+              </div>
+              <div class="module-title">Integrated<br/>Advisory</div>
+              <div class="module-desc">IA brand voice, CPA-focused writing, orchestrator framing, and the slash command guide.</div>
+              <div class="module-meta">
+                <span class="module-pill" style="background:rgba(38,113,115,0.1); color:#267173;">IA brand</span>
+                <span class="module-arrow">→</span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="showPage('mod-usage')" style="--accent: #6290AB; --icon-bg: rgba(98,144,171,0.1);">
+              <div class="module-num">MODULE 07</div>
+              <div class="module-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="#6290AB"><path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z"/></svg>
+              </div>
+              <div class="module-title">Usage &amp;<br/>credits</div>
+              <div class="module-desc">How billing works, what drives usage up, spend limits explained, and your self-audit prompt.</div>
+              <div class="module-meta">
+                <span class="module-pill blue">Admin</span>
+                <span class="module-arrow">→</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Quick tips -->
+          <span class="band-label fade-in-3">Latest tips from the team channel</span>
+          <div class="quick-row fade-in-3">
+            <div class="quick-card">
+              <div class="quick-label">Apr 21</div>
+              <div class="quick-text">Ask Claude to identify gaps in a document — what questions does this leave unanswered?</div>
+              <div class="quick-prompt">"Read this document and tell me what questions it leaves unanswered."</div>
+            </div>
+            <div class="quick-card">
+              <div class="quick-label">Apr 21</div>
+              <div class="quick-text">Turn scattered notes into a structured document without losing anything.</div>
+              <div class="quick-prompt">"Here are my rough notes. Turn these into a structured summary with clear sections."</div>
+            </div>
+            <div class="quick-card">
+              <div class="quick-label">Apr 21</div>
+              <div class="quick-text">Ask Claude to explain a complex topic in plain, client-friendly language.</div>
+              <div class="quick-prompt">"Explain [concept] in plain language a client who isn't a financial expert would understand."</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Widgets -->
+        <div class="right-col fade-in-4">
+
+          <!-- News widget -->
+          <div class="widget">
+            <div class="widget-header">
+              <div class="widget-title">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.5l7 4.5 7-4.5V4a1 1 0 0 0-1-1H2zm13 2.236-6.5 4.179a1 1 0 0 1-1 0L1 5.236V12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5.236z"/></svg>
+                Claude news &amp; updates
+              </div>
+              <a href="https://www.anthropic.com/news" target="_blank" class="widget-action">View all ↗</a>
+            </div>
+            <div class="widget-body" id="news-feed">
+              <div class="news-item">
+                <div class="news-date">Apr 2026</div>
+                <div class="news-headline">Claude 4 model family released — Sonnet 4.6 and Opus 4.6 now available</div>
+                <span class="news-tag feature">New model</span>
+              </div>
+              <div class="news-item">
+                <div class="news-date">Apr 2026</div>
+                <div class="news-headline">Claude in Excel, Powerpoint, and Chrome now in beta</div>
+                <span class="news-tag update">Beta</span>
+              </div>
+              <div class="news-item">
+                <div class="news-date">Mar 2026</div>
+                <div class="news-headline">Persistent memory now available — Claude remembers context across sessions</div>
+                <span class="news-tag">Feature</span>
+              </div>
+              <div class="news-item">
+                <div class="news-date">Mar 2026</div>
+                <div class="news-headline">Claude Code released — agentic coding via command line</div>
+                <span class="news-tag update">Product</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status tracker -->
+          <div class="widget">
+            <div class="widget-header">
+              <div class="widget-title">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3.293l5 5V13H3V8.293l5-5zM8 1.5L1.5 8H3v5.5A.5.5 0 0 0 3.5 14h9a.5.5 0 0 0 .5-.5V8h1.5L8 1.5z"/></svg>
+                System status
+              </div>
+              <a href="https://status.anthropic.com" target="_blank" class="widget-action">status.anthropic.com ↗</a>
+            </div>
+            <div class="status-list">
+              <div class="status-item">
+                <span class="status-dot"></span>
+                <span class="status-service">claude.ai</span>
+                <span class="status-label status-ok">Operational</span>
+              </div>
+              <div class="status-item">
+                <span class="status-dot"></span>
+                <span class="status-service">Claude API</span>
+                <span class="status-label status-ok">Operational</span>
+              </div>
+              <div class="status-item">
+                <span class="status-dot"></span>
+                <span class="status-service">Claude Desktop (Cowork)</span>
+                <span class="status-label status-ok">Operational</span>
+              </div>
+              <div class="status-item">
+                <span class="status-dot"></span>
+                <span class="status-service">Team plan billing</span>
+                <span class="status-label status-ok">Operational</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Governance reminder -->
+          <div class="widget">
+            <div class="widget-header">
+              <div class="widget-title">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+                Governance reminder
+              </div>
+            </div>
+            <div style="padding: 14px 20px;">
+              <div style="font-size: 12px; line-height: 1.65; color: var(--wc-gray); font-weight: 300;">
+                <strong style="color:var(--wc-black); font-weight:500;">No client PII in Claude.</strong> Do not enter client names, account numbers, SINs, or any personally identifiable information. Anonymise and describe — don't paste. <br><br>
+                This restriction is temporary and will be lifted once our data lake infrastructure is in place.
+              </div>
+              <div class="tag-row">
+                <span class="tag tag-gray">Anonymise data</span>
+                <span class="tag tag-gray">No client names</span>
+                <span class="tag tag-gray">No account #s</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /right-col -->
+      </div><!-- /dashboard-cols -->
+    </div><!-- /content -->
+  </div><!-- /page-dashboard -->
+
+
+  <!-- ════════════════════════════
+       PAGE: MODULE 01 — GETTING STARTED
+  ════════════════════════════ -->
+  <div id="page-mod-getting-started" class="page">
+    <div class="content">
+      <div class="module-hero fade-in">
+        <svg class="swoops" viewBox="0 0 900 220" fill="none" preserveAspectRatio="none">
+          <path d="M-50 150 Q200 50 450 110 Q650 160 950 50" stroke="#2E8871" stroke-width="1" opacity="0.3"/>
+          <circle cx="820" cy="50" r="120" fill="#2E8871" opacity="0.04"/>
+        </svg>
+        <button class="back-btn" onclick="showPage('dashboard')">← Back to dashboard</button>
+        <div class="module-hero-eyebrow">Module 01 · Foundation</div>
+        <h1 class="module-hero-title">Getting<br/><em>started</em></h1>
+        <p class="module-hero-desc">What Claude is, how it thinks, and how WealthCo has set it up for you. Your first 15 minutes.</p>
+      </div>
+
+      <div class="detail-grid fade-in-2">
+        <div class="detail-main">
+
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#2E8871"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 2.5a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5zM7.25 6h1.5v5h-1.5V6z"/></svg>
+              <span class="section-block-title">What is Claude?</span>
+            </div>
+            <div class="section-block-body">
+              <div class="highlight-box">
+                <p>Claude is an AI assistant made by Anthropic. Think of it as a highly capable thinking and writing partner — not a search engine, not autocomplete, not a chatbot that gives robotic answers. It reasons, writes, questions, and adapts to context. <strong>The more specifically you direct it, the better it performs.</strong></p>
+              </div>
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">01</div>
+                  <div class="tip-content">
+                    <div class="tip-title">It thinks in long form</div>
+                    <div class="tip-desc">Claude doesn't just retrieve facts — it reasons through problems, weighs considerations, and structures arguments. Ask it to think through a complex client situation, not just summarise it.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">02</div>
+                  <div class="tip-content">
+                    <div class="tip-title">It challenges, not just validates</div>
+                    <div class="tip-desc">Claude is built to push back, surface gaps, and argue against its own output when asked. It's not a yes-machine — use that to your advantage.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">03</div>
+                  <div class="tip-content">
+                    <div class="tip-title">It's designed for nuanced writing</div>
+                    <div class="tip-desc">Claude excels at tone, voice, register, and audience adaptation. It can match WealthCo's challenger tone, shift to warm IA collegial voice, or write plain-language client copy — all from a prompt.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#2E8871"><path d="M8 .5a7.5 7.5 0 1 0 0 15A7.5 7.5 0 0 0 8 .5zm0 2a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5zm0 3h.5a.5.5 0 0 1 .5.5v4.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H8V6.5h-.5a.5.5 0 0 1 0-1H8z"/></svg>
+              <span class="section-block-title">How WealthCo has set it up</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">01</div>
+                  <div class="tip-content">
+                    <div class="tip-title">You have a Team plan seat</div>
+                    <div class="tip-desc">You're on WealthCo's Claude Team plan. You have access to claude.ai and Claude Desktop (Cowork). Ensure you've downloaded the Desktop app — this enables file collaboration directly on your computer.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">02</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Use the Strike Team project</div>
+                    <div class="tip-desc">All your work should live inside your Claude project. Projects give Claude persistent context — it understands your role, your tasks, and the WealthCo context without you re-explaining it each time.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">03</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Sign the governance framework</div>
+                    <div class="tip-desc">You've received a DocuSign from Dane Solon. This is your acknowledgement of the WealthCo AI usage governance framework — make sure it's completed before using Claude with any work content.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">04</div>
+                  <div class="tip-content">
+                    <div class="tip-title">No client PII — this is mandatory</div>
+                    <div class="tip-desc">Do not enter client names, SINs, account numbers, or any personally identifiable information into Claude. Anonymise and describe the situation instead. This is a temporary restriction while data lake infrastructure is built.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#2E8871"><path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h11A1.5 1.5 0 0 1 15 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 12.5v-9z"/></svg>
+              <span class="section-block-title">Your first conversation</span>
+            </div>
+            <div class="section-block-body">
+              <p style="font-size:13px; line-height:1.65; color:var(--wc-gray); font-weight:300; margin-bottom:16px;">The best way to learn Claude is to ask it to teach you. Try this as your first prompt:</p>
+              <div style="background:var(--wc-black); border-radius:10px; padding:20px 22px;">
+                <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:rgba(246,246,246,0.3); margin-bottom:10px;">Starter prompt</div>
+                <p style="font-family:var(--mono); font-size:12px; line-height:1.65; color:rgba(246,246,246,0.75); font-style:italic;">"I'm a [your role] at WealthCo, a Canadian integrated financial advisory firm. I'm new to using Claude professionally. Walk me through the most impactful ways someone in my role can use you — and show me an example of each."</p>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /detail-main -->
+
+        <div class="detail-aside">
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#2E8871"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 2.5a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5zM7.25 6h1.5v5h-1.5V6z"/></svg>
+              Quick access
+            </div>
+            <div class="aside-card-body">
+              <div class="aside-list-item"><a href="https://claude.ai" target="_blank" style="color:inherit; text-decoration:none;">claude.ai — open the web app</a></div>
+              <div class="aside-list-item"><a href="https://claude.com/download" target="_blank" style="color:inherit; text-decoration:none;">Download Claude Desktop</a></div>
+              <div class="aside-list-item"><a href="https://claude.com/resources/tutorials/navigating-the-claude-desktop-app" target="_blank" style="color:inherit; text-decoration:none;">Desktop app walkthrough</a></div>
+              <div class="aside-list-item"><a href="https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview" target="_blank" style="color:inherit; text-decoration:none;">Anthropic prompting guide</a></div>
+            </div>
+          </div>
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#6290AB"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+              Governance checklist
+            </div>
+            <div class="aside-card-body">
+              <div class="aside-list-item">DocuSign framework signed ✓</div>
+              <div class="aside-list-item">No client PII in Claude</div>
+              <div class="aside-list-item">Use anonymised scenarios</div>
+              <div class="aside-list-item">Model set to Sonnet (not Opus)</div>
+              <div class="aside-list-item">Working inside a Project</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       PAGE: MODULE 02 — PROMPTING
+  ════════════════════════════ -->
+  <div id="page-mod-prompting" class="page">
+    <div class="content">
+      <div class="module-hero fade-in">
+        <svg class="swoops" viewBox="0 0 900 220" fill="none" preserveAspectRatio="none">
+          <path d="M-50 150 Q200 50 450 110 Q650 160 950 50" stroke="#6290AB" stroke-width="1" opacity="0.3"/>
+          <circle cx="820" cy="50" r="120" fill="#6290AB" opacity="0.04"/>
+        </svg>
+        <button class="back-btn" onclick="showPage('dashboard')">← Back to dashboard</button>
+        <div class="module-hero-eyebrow">Module 02 · Core skill</div>
+        <h1 class="module-hero-title">Prompting<br/><em>guide</em></h1>
+        <p class="module-hero-desc">How to write prompts that consistently get sharp, useful output. Four principles, five techniques.</p>
+      </div>
+
+      <div class="detail-grid fade-in-2">
+        <div class="detail-main">
+
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#6290AB"><path d="M1 4a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1zm0 4a1 1 0 0 1 1-1h8a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1zm0 4a1 1 0 0 1 1-1h6a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1z"/></svg>
+              <span class="section-block-title">The four principles</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">01</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Be specific about what you want</div>
+                    <div class="tip-desc">Vague prompts produce vague outputs. Specify the format, length, audience, purpose, and any constraints. Claude will fill gaps with assumptions — give it as little to assume as possible.</div>
+                    <div class="tip-prompt">"Write a 150-word proposal intro for a business owner who sold their company for $4M and is meeting us for the first time. Tone: direct, confident, no platitudes. Audience: 58-year-old male, skeptical of financial advisors."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">02</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Give Claude a role before the task</div>
+                    <div class="tip-desc">Before describing what you want, tell Claude who you want it to be. A role activates the right voice, expertise level, and framing. One line at the top changes everything.</div>
+                    <div class="tip-prompt">"You are a senior financial writer who specialises in writing for high-net-worth Canadian business owners. Write a..."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">03</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Iterate, don't restart</div>
+                    <div class="tip-desc">The best output rarely comes from one prompt. Stay in the conversation and refine. Ask Claude to sharpen a section, shift the tone, cut by half, or argue against its own draft. Each turn builds on the last.</div>
+                    <div class="tip-prompt">"Good. Now make the opening sentence more direct. Cut the second paragraph. And give me a shorter alternative for the CTA."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">04</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Ask Claude to think, not just produce</div>
+                    <div class="tip-desc">For complex tasks, ask Claude to think through the approach before writing. "What's the best way to structure this?" or "What am I missing?" produces a much sharper starting point than jumping straight to a draft.</div>
+                    <div class="tip-prompt">"Before you write anything, tell me how you'd approach this and what you'd need to know to do it well."</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#6290AB"><path d="M8 1.5a.5.5 0 0 1 .5.5v5.5H14a.5.5 0 0 1 0 1H8.5v5.5a.5.5 0 0 1-1 0V8.5H2a.5.5 0 0 1 0-1h5.5V2a.5.5 0 0 1 .5-.5z"/></svg>
+              <span class="section-block-title">Advanced techniques</span>
+            </div>
+            <div class="section-block-body">
+              <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  Ask Claude to critique its own output
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 12.53a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0-1.06-1.06L8 10.94 4.03 6.97a.75.75 0 0 0-1.06 1.06l4.5 4.5z"/></svg>
+                </button>
+                <div class="accordion-body">After Claude delivers a draft or analysis, ask: <em>"What are the weaknesses in this? What did you miss or assume?"</em> Claude is remarkably good at stress-testing its own work. Build this into every review step before sharing anything externally.</div>
+              </div>
+              <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  Use Claude as a thinking partner, not a task executor
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 12.53a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0-1.06-1.06L8 10.94 4.03 6.97a.75.75 0 0 0-1.06 1.06l4.5 4.5z"/></svg>
+                </button>
+                <div class="accordion-body">Before drafting anything, describe the problem. What are you trying to accomplish, who is the audience, what does success look like? Ask Claude to help you think through the approach before writing a single word.</div>
+              </div>
+              <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  Let Claude stress-test your reasoning
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 12.53a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0-1.06-1.06L8 10.94 4.03 6.97a.75.75 0 0 0-1.06 1.06l4.5 4.5z"/></svg>
+                </button>
+                <div class="accordion-body">Share a recommendation, proposal, or decision and ask Claude to argue against it. Not to be contrarian — to surface the weakest points before someone else does. <em>"Here's my recommendation. Play devil's advocate — what are the strongest objections someone could raise?"</em></div>
+              </div>
+              <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  Use positive and negative examples
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 12.53a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0-1.06-1.06L8 10.94 4.03 6.97a.75.75 0 0 0-1.06 1.06l4.5 4.5z"/></svg>
+                </button>
+                <div class="accordion-body">Show Claude what you want AND what you don't. Paste in a piece of writing you admire and one you don't. Say "write something more like the first, less like the second." Examples do more work than descriptions.</div>
+              </div>
+              <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  Split long sessions into separate conversations
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 12.53a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0-1.06-1.06L8 10.94 4.03 6.97a.75.75 0 0 0-1.06 1.06l4.5 4.5z"/></svg>
+                </button>
+                <div class="accordion-body">Long iterative revision sessions accumulate context quickly, which drives up usage. If you've finished one task and are starting a new one, start a fresh conversation. This keeps costs lower and responses sharper.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#C0453F"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+              <span class="section-block-title">Common prompting mistakes</span>
+            </div>
+            <div class="section-block-body">
+              <div class="do-dont-grid">
+                <div class="do-card">
+                  <div class="do-head">✓ Do this</div>
+                  <div class="do-item">Give a role first, then the task</div>
+                  <div class="do-item">Specify format, length, audience</div>
+                  <div class="do-item">Iterate in the same conversation</div>
+                  <div class="do-item">Ask Claude to challenge its output</div>
+                  <div class="do-item">Share context and constraints upfront</div>
+                </div>
+                <div class="dont-card">
+                  <div class="dont-head">✕ Avoid this</div>
+                  <div class="dont-item">Starting with "Write me a..."</div>
+                  <div class="dont-item">Accepting the first draft as final</div>
+                  <div class="dont-item">Restarting a fresh conversation to revise</div>
+                  <div class="dont-item">Asking vague questions and hoping</div>
+                  <div class="dont-item">Omitting audience or purpose</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="detail-aside">
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#6290AB"><path d="M1 4a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1z"/></svg>
+              Prompt starters
+            </div>
+            <div class="aside-card-body">
+              <div class="aside-list-item">"You are a [role]. Help me [task]."</div>
+              <div class="aside-list-item">"Before you write, tell me your approach."</div>
+              <div class="aside-list-item">"What are the weaknesses in this?"</div>
+              <div class="aside-list-item">"Argue against this recommendation."</div>
+              <div class="aside-list-item">"Cut this by half without losing meaning."</div>
+              <div class="aside-list-item">"Give me 3 alternative versions."</div>
+            </div>
+          </div>
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#6290AB"><path d="M8 .5a7.5 7.5 0 1 0 0 15A7.5 7.5 0 0 0 8 .5z"/></svg>
+              Usage tip
+            </div>
+            <div class="aside-card-body">
+              <p style="font-size:12px; line-height:1.65; color:var(--wc-gray); font-weight:300;">Iterative back-and-forth in long sessions is the #1 driver of high usage. Split into separate conversations when you move to a new task to keep costs manageable.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       PAGE: MODULE 03 — USE CASES
+  ════════════════════════════ -->
+  <div id="page-mod-use-cases" class="page">
+    <div class="content">
+      <div class="module-hero fade-in">
+        <svg class="swoops" viewBox="0 0 900 220" fill="none" preserveAspectRatio="none">
+          <path d="M-50 150 Q200 50 450 110 Q650 160 950 50" stroke="#2E8871" stroke-width="1" opacity="0.3"/>
+          <circle cx="820" cy="50" r="120" fill="#2E8871" opacity="0.04"/>
+        </svg>
+        <button class="back-btn" onclick="showPage('dashboard')">← Back to dashboard</button>
+        <div class="module-hero-eyebrow">Module 03 · Practical</div>
+        <h1 class="module-hero-title">Use cases<br/><em>at WealthCo</em></h1>
+        <p class="module-hero-desc">Real applications for your day-to-day work — writing, analysis, client prep, and internal communication.</p>
+      </div>
+
+      <div class="detail-grid fade-in-2">
+        <div class="detail-main">
+
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#2E8871"><path d="M1 4a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1z"/></svg>
+              <span class="section-block-title">Writing &amp; communications</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">01</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Draft client follow-ups from meeting notes</div>
+                    <div class="tip-desc">Paste in your meeting notes (anonymised) and ask Claude to draft a follow-up email. Specify tone, length, and any key actions to include.</div>
+                    <div class="tip-prompt">"Here are my notes from a client meeting. Draft a follow-up email that is warm, professional, and summarises the three key next steps we agreed on."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">02</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Draft proposals from briefs</div>
+                    <div class="tip-desc">Give Claude the client context, the objective, and the key points to hit. Ask it to structure and draft the proposal sections, then iterate on each one.</div>
+                    <div class="tip-prompt">"Here's the brief for a client proposal. Draft the executive summary and situation overview sections. Tone: direct, confident, WealthCo brand."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">03</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Handle long email threads</div>
+                    <div class="tip-desc">Paste in a long email thread and ask Claude to summarise it, extract decisions, or draft a reply that cuts through the noise.</div>
+                    <div class="tip-prompt">"Here's a long email thread. Summarise the key points, what decisions have been made, and what is still unresolved. Then draft a reply that moves things forward."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">04</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Write two versions for different audiences</div>
+                    <div class="tip-desc">Ask Claude to produce the same content at two register levels — one for a client, one for an internal stakeholder. Saves significant time on adapted messaging.</div>
+                    <div class="tip-prompt">"Write this message in two versions: one for a client who is not financially sophisticated, one for our internal investment committee."</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#6290AB"><path d="M2 2h12v12H2z" opacity="0.2"/><path d="M2 2v12h12V2H2zm1 1h10v10H3V3z"/></svg>
+              <span class="section-block-title">Analysis &amp; thinking</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">01</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Compress long documents into a decision brief</div>
+                    <div class="tip-desc">Turn a lengthy report or policy document into a one-page brief with context, key facts, decision required, and recommended next step.</div>
+                    <div class="tip-prompt">"Read this document and produce a one-page decision brief: background, the 3 most important facts, what decision needs to be made, and a recommended next step."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">02</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Identify gaps in documents</div>
+                    <div class="tip-desc">Ask Claude what questions a document leaves unanswered. This is one of the most underused prompts — it surfaces blind spots before your clients or leadership do.</div>
+                    <div class="tip-prompt">"Read this document. What questions does it leave unanswered? What would a skeptical reader ask that isn't addressed here?"</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">03</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Turn scattered notes into structured documents</div>
+                    <div class="tip-desc">Paste rough notes, voice memo transcripts, or bullet points — ask Claude to organise them into a structured format without losing anything.</div>
+                    <div class="tip-prompt">"Here are my rough notes from the strategy session. Turn these into a structured summary with sections for context, decisions made, and open questions."</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#2E8871"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 14s-1 0-1-1 1-4 7-4 7 3 7 4-1 1-1 1H2z"/></svg>
+              <span class="section-block-title">Client preparation</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">01</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Prep for difficult conversations</div>
+                    <div class="tip-desc">Describe a tricky client situation (anonymised) and ask Claude to help you think through angles, anticipate objections, and draft your key talking points before the meeting.</div>
+                    <div class="tip-prompt">"I have a client meeting tomorrow where I need to address concerns about recent portfolio performance. Help me anticipate their objections and draft clear, honest responses."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">02</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Explain complex topics in plain language</div>
+                    <div class="tip-desc">Ask Claude to translate financial or legal concepts into clear, jargon-free client language. Specify that the client is not financially sophisticated.</div>
+                    <div class="tip-prompt">"Explain the difference between a family trust and a holding company in plain language a 60-year-old business owner with no tax background would understand."</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="detail-aside">
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#2E8871"><path d="M1 4a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1z"/></svg>
+              Cowork series recap
+            </div>
+            <div class="aside-card-body">
+              <div style="font-size:11px; color:var(--wc-gray); font-weight:300; margin-bottom:10px;">What was covered in the Week 1 Cowork series:</div>
+              <div class="aside-list-item">Drafting from meeting notes</div>
+              <div class="aside-list-item">Proposals from briefs</div>
+              <div class="aside-list-item">Cleaning up existing writing</div>
+              <div class="aside-list-item">Long email thread management</div>
+              <div class="aside-list-item">Two-audience version writing</div>
+            </div>
+          </div>
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#6290AB"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2z"/></svg>
+              Data reminder
+            </div>
+            <div class="aside-card-body">
+              <p style="font-size:12px; line-height:1.65; color:var(--wc-gray); font-weight:300;">All examples above assume anonymised client data. Replace specific names, numbers, or identifiers with generics like "a business owner client" or "a $4M liquidity event."</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       PAGE: MODULE 04 — TIPS
+  ════════════════════════════ -->
+  <div id="page-mod-tips" class="page">
+    <div class="content">
+      <div class="module-hero fade-in" style="background: linear-gradient(135deg, #1F1F23 60%, #2a2a1a);">
+        <svg class="swoops" viewBox="0 0 900 220" fill="none" preserveAspectRatio="none">
+          <path d="M-50 150 Q200 50 450 110 Q650 160 950 50" stroke="#EDCF79" stroke-width="1" opacity="0.25"/>
+          <circle cx="820" cy="50" r="120" fill="#EDCF79" opacity="0.04"/>
+        </svg>
+        <button class="back-btn" onclick="showPage('dashboard')">← Back to dashboard</button>
+        <div class="module-hero-eyebrow" style="color:#EDCF79;">Module 04 · Tips &amp; tricks</div>
+        <h1 class="module-hero-title">All tips,<br/><em style="color:#EDCF79;">one place.</em></h1>
+        <p class="module-hero-desc">Every tip sent through the Strike Team channel — organised by theme and batch. 20 tips across 6 rounds.</p>
+      </div>
+
+      <div class="detail-grid fade-in-2">
+        <div class="detail-main">
+
+          <div class="section-block">
+            <div class="section-block-header" style="border-left: 3px solid #EDCF79;">
+              <span class="section-block-title">Apr 21 — Thinking &amp; analysis</span>
+              <span style="margin-left:auto; font-family:var(--mono); font-size:9px; color:var(--wc-gray);">3 tips</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">1</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Identify gaps in documents</div>
+                    <div class="tip-desc">Ask what questions a document leaves unanswered. Surfaces blind spots before clients or leadership do.</div>
+                    <div class="tip-prompt">"Read this document and tell me what questions it leaves unanswered."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">2</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Turn scattered notes into structured docs</div>
+                    <div class="tip-desc">Paste rough notes — Claude organises them without losing anything.</div>
+                    <div class="tip-prompt">"Here are my rough notes. Turn these into a structured summary with clear sections."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">3</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Explain complex topics in plain language</div>
+                    <div class="tip-desc">Translate financial concepts into clear language for clients who aren't financial experts.</div>
+                    <div class="tip-prompt">"Explain [concept] in plain language a client who isn't a financial expert would understand."</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-block-header" style="border-left: 3px solid #2E8871;">
+              <span class="section-block-title">Apr 20 — Brand skills (visual edition)</span>
+              <span style="margin-left:auto; font-family:var(--mono); font-size:9px; color:var(--wc-gray);">3 tips</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">1</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Review drafts against WealthCo brand standards</div>
+                    <div class="tip-desc">Paste a draft and ask Claude to flag anything off-brand — voice, naming, tone, design.</div>
+                    <div class="tip-prompt">"/wealthco-brand — Review this draft against brand standards and flag anything off."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">2</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Write proposal intros for specific client scenarios</div>
+                    <div class="tip-desc">Give Claude the client trigger moment and ask for a brand-compliant intro.</div>
+                    <div class="tip-prompt">"/wealthco-brand — Write a proposal intro for a client exiting with $4M. Under 150 words."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">3</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Ask for Tone 3 vs Tone 4 openers</div>
+                    <div class="tip-desc">Get two versions of any piece — Tone 3 (champion) vs Tone 4 (challenger) — and choose the one that fits the client.</div>
+                    <div class="tip-prompt">"Write two alternative openers: one in Tone 3 (champion, warm), one in Tone 4 (challenger, direct)."</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-block-header" style="border-left: 3px solid #6290AB;">
+              <span class="section-block-title">Apr 14 — Mindset &amp; process</span>
+              <span style="margin-left:auto; font-family:var(--mono); font-size:9px; color:var(--wc-gray);">3 tips</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">1</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Give Claude a role before a task</div>
+                    <div class="tip-desc">Start with "You are a senior [role]..." — one line of context at the top changes everything.</div>
+                    <div class="tip-prompt">"You are a senior financial writer helping me prepare a client-facing summary. Write..."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">2</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Use Claude to prep for hard conversations</div>
+                    <div class="tip-desc">Describe the scenario, ask Claude to anticipate objections and draft your key points before any difficult meeting.</div>
+                    <div class="tip-prompt">"I have a hard conversation coming up. Here's the situation [anonymised]. Help me prepare."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">3</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Ask Claude to critique its own output</div>
+                    <div class="tip-desc">After any draft, ask: "What are the weaknesses in this? What did you miss?" Build this into your review habit.</div>
+                    <div class="tip-prompt">"What are the weaknesses in this? What did you miss or assume?"</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-block-header" style="border-left: 3px solid #635E6E;">
+              <span class="section-block-title">Cowork Week 1 — Writing &amp; comms</span>
+              <span style="margin-left:auto; font-family:var(--mono); font-size:9px; color:var(--wc-gray);">5 tips</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item"><div class="tip-num">1</div><div class="tip-content"><div class="tip-title">Draft client follow-ups from meeting notes</div><div class="tip-desc">Paste notes, get a polished follow-up email. Specify tone and key actions.</div></div></div>
+                <div class="tip-item"><div class="tip-num">2</div><div class="tip-content"><div class="tip-title">Draft proposals from briefs</div><div class="tip-desc">Give context and objectives — Claude structures and drafts proposal sections for you to refine.</div></div></div>
+                <div class="tip-item"><div class="tip-num">3</div><div class="tip-content"><div class="tip-title">Clean up existing writing</div><div class="tip-desc">Paste a rough draft — ask Claude to sharpen the language, tighten the structure, or shift the register.</div></div></div>
+                <div class="tip-item"><div class="tip-num">4</div><div class="tip-content"><div class="tip-title">Handle long email threads</div><div class="tip-desc">Summarise, extract decisions, and draft a reply that moves things forward — in seconds.</div></div></div>
+                <div class="tip-item"><div class="tip-num">5</div><div class="tip-content"><div class="tip-title">Produce two versions for different audiences</div><div class="tip-desc">Client version and internal version from one prompt. Saves significant time on adapted messaging.</div></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-block-header" style="border-left: 3px solid #2E8871;">
+              <span class="section-block-title">Apr 6 — Core capabilities</span>
+              <span style="margin-left:auto; font-family:var(--mono); font-size:9px; color:var(--wc-gray);">4 tips</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item"><div class="tip-num">1</div><div class="tip-content"><div class="tip-title">Claude thinks in long form</div><div class="tip-desc">Not just fast answers — ask it to reason through complex problems and structure arguments fully.</div></div></div>
+                <div class="tip-item"><div class="tip-num">2</div><div class="tip-content"><div class="tip-title">Designed for nuanced writing</div><div class="tip-desc">Tone, voice, register, audience adaptation — Claude excels at writing that needs real craft.</div></div></div>
+                <div class="tip-item"><div class="tip-num">3</div><div class="tip-content"><div class="tip-title">Claude challenges, not just validates</div><div class="tip-desc">It's built to push back and surface gaps. Use it as a thinking partner, not a yes-machine.</div></div></div>
+                <div class="tip-item"><div class="tip-num">4</div><div class="tip-content"><div class="tip-title">Projects keep your work grounded</div><div class="tip-desc">All your work lives in one place. Claude knows your context without re-explaining it each time.</div></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-block-header" style="border-left: 3px solid #635E6E;">
+              <span class="section-block-title">Prompting guide &amp; memory feature</span>
+              <span style="margin-left:auto; font-family:var(--mono); font-size:9px; color:var(--wc-gray);">Early tips</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item"><div class="tip-num">1</div><div class="tip-content"><div class="tip-title">Memory feature — search &amp; reference past chats</div><div class="tip-desc">Turn on in Settings → Capabilities → Memory. Claude builds context over time from your history.</div></div></div>
+                <div class="tip-item"><div class="tip-num">2</div><div class="tip-content"><div class="tip-title">Be specific about what you want</div><div class="tip-desc">Format, length, audience, purpose, constraints — the more context, the sharper the output.</div></div></div>
+                <div class="tip-item"><div class="tip-num">3</div><div class="tip-content"><div class="tip-title">Give Claude a role before any task</div><div class="tip-desc">One line of context at the top shifts tone, depth, and framing immediately.</div></div></div>
+                <div class="tip-item"><div class="tip-num">4</div><div class="tip-content"><div class="tip-title">Iterate, don't restart</div><div class="tip-desc">Stay in the conversation and refine. Each turn builds on the last — restarting loses everything.</div></div></div>
+                <div class="tip-item"><div class="tip-num">5</div><div class="tip-content"><div class="tip-title">Make your usage go further</div><div class="tip-desc">Split tasks into separate conversations. Avoid uploading large files unnecessarily. Use Sonnet, not Opus.</div></div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="detail-aside">
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#BD9521"><path d="M8 1a4.5 4.5 0 0 0-2 8.5V11h4V9.5A4.5 4.5 0 0 0 8 1z"/></svg>
+              Tips summary
+            </div>
+            <div class="aside-card-body">
+              <div style="font-size:12px; color:var(--wc-gray); font-weight:300; line-height:1.6;">
+                <strong style="color:var(--wc-black); font-weight:500;">20 tips total</strong> across 6 batches sent since the Strike Team launched.<br><br>
+                Use this page as your reference library. All tips are organised newest-first.
+              </div>
+              <div class="tag-row" style="margin-top:12px;">
+                <span class="tag tag-green">Writing</span>
+                <span class="tag tag-blue">Prompting</span>
+                <span class="tag tag-gray">Brand</span>
+                <span class="tag tag-green">Analysis</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       PAGE: MODULE 05 — BRAND SKILLS
+  ════════════════════════════ -->
+  <div id="page-mod-brand" class="page">
+    <div class="content">
+      <div class="module-hero fade-in">
+        <svg class="swoops" viewBox="0 0 900 220" fill="none" preserveAspectRatio="none">
+          <path d="M-50 150 Q200 50 450 110 Q650 160 950 50" stroke="#2E8871" stroke-width="1" opacity="0.3"/>
+          <circle cx="820" cy="50" r="120" fill="#2E8871" opacity="0.04"/>
+        </svg>
+        <button class="back-btn" onclick="showPage('dashboard')">← Back to dashboard</button>
+        <div class="module-hero-eyebrow">Module 05 · WCO + IA</div>
+        <h1 class="module-hero-title">WCO brand<br/><em>skills</em></h1>
+        <p class="module-hero-desc">How to use Claude's brand commands to produce on-brand writing and design for WealthCo and Integrated Advisory.</p>
+      </div>
+
+      <div class="detail-grid fade-in-2">
+        <div class="detail-main">
+
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#2E8871"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v6A1.5 1.5 0 0 1 12.5 11H9l-3 3v-3H3.5A1.5 1.5 0 0 1 2 9.5v-6z"/></svg>
+              <span class="section-block-title">The slash commands</span>
+            </div>
+            <div class="section-block-body">
+              <div class="highlight-box">
+                <p>Type <strong>/wealthco-brand</strong> or <strong>/integrated-advisory-brand</strong> at the start of any prompt to activate the full brand guidelines. Claude will apply voice, tone, colour, naming, and design rules automatically.</p>
+              </div>
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">01</div>
+                  <div class="tip-content">
+                    <div class="tip-title">/wealthco-brand</div>
+                    <div class="tip-desc">Applies WealthCo brand standards: Tone 4 challenger voice, off-white palette, almost black, asset green accent, banned phrases flagged, sentence case enforced, trigger moment anchoring.</div>
+                    <div class="tip-prompt">"/wealthco-brand — Write a proposal intro for a client exiting with $4M. Under 150 words."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">02</div>
+                  <div class="tip-content">
+                    <div class="tip-title">/integrated-advisory-brand</div>
+                    <div class="tip-desc">Applies IA brand standards: warm cream background, deep teal gradient, peer/collegial voice for CPAs, CPA-as-orchestrator framing, no sales language, "member firm" terminology.</div>
+                    <div class="tip-prompt">"/integrated-advisory-brand — Write a LinkedIn post for a CPA firm owner considering advisory services."</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#2E8871"><path d="M3 2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H3z"/></svg>
+              <span class="section-block-title">WealthCo brand rules</span>
+            </div>
+            <div class="section-block-body">
+              <div class="do-dont-grid">
+                <div class="do-card">
+                  <div class="do-head">✓ Always do this</div>
+                  <div class="do-item">Write "WealthCo." with a period in design</div>
+                  <div class="do-item">Use sentence case for all headings</div>
+                  <div class="do-item">Lead with the client's trigger moment</div>
+                  <div class="do-item">Use Tone 4 challenger voice as default</div>
+                  <div class="do-item">Use one sub-brand accent colour max</div>
+                  <div class="do-item">Add swoops on dark hero sections</div>
+                </div>
+                <div class="dont-card">
+                  <div class="dont-head">✕ Never do this</div>
+                  <div class="dont-item">Write "WealthCo Inc." in client copy</div>
+                  <div class="dont-item">Use "holistic", "robust", "synergistic", "journey"</div>
+                  <div class="dont-item">Write "trusted advisors" — show outcomes</div>
+                  <div class="dont-item">Lead with WealthCo, not the client</div>
+                  <div class="dont-item">Mix multiple sub-brand accent colours</div>
+                  <div class="dont-item">Add drop shadows or gradients to logo</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#2E8871"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1z" opacity="0.3"/><path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5v-5z"/></svg>
+              <span class="section-block-title">Brand review workflow</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">01</div>
+                  <div class="tip-content"><div class="tip-title">Paste your draft</div><div class="tip-desc">Start your prompt with the slash command, then paste in the content you want reviewed.</div><div class="tip-prompt">"/wealthco-brand — Here's a draft. Review it against brand standards — voice, design, and naming — and flag anything off."</div></div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">02</div>
+                  <div class="tip-content"><div class="tip-title">Ask for specific tone versions</div><div class="tip-desc">Request Tone 3 (warm champion) vs Tone 4 (direct challenger) alternatives to find the right register for each client.</div><div class="tip-prompt">"Give me two versions of this opener — Tone 3 (champion, warm) and Tone 4 (challenger, direct). I'll choose."</div></div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">03</div>
+                  <div class="tip-content"><div class="tip-title">Anchor to a trigger moment</div><div class="tip-desc">WealthCo content always starts with the client's situation — exit, health scare, or family dynamics. Make sure your prompt includes this context.</div><div class="tip-prompt">"The client just sold their business for $4M and is anxious about what comes next. Write from that moment."</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="detail-aside">
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#2E8871"><path d="M3 2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H3z"/></svg>
+              Colour tokens
+            </div>
+            <div class="aside-card-body">
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--wc-black);">
+                  <div style="width:14px; height:14px; border-radius:3px; background:#F6F6F6; border:1px solid rgba(31,31,35,0.1); flex-shrink:0;"></div>
+                  <span>Off-white <span style="font-family:var(--mono); color:var(--wc-gray);">#F6F6F6</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--wc-black);">
+                  <div style="width:14px; height:14px; border-radius:3px; background:#1F1F23; flex-shrink:0;"></div>
+                  <span>Almost black <span style="font-family:var(--mono); color:var(--wc-gray);">#1F1F23</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--wc-black);">
+                  <div style="width:14px; height:14px; border-radius:3px; background:#635E6E; flex-shrink:0;"></div>
+                  <span>Teal gray <span style="font-family:var(--mono); color:var(--wc-gray);">#635E6E</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--wc-black);">
+                  <div style="width:14px; height:14px; border-radius:3px; background:#2E8871; flex-shrink:0;"></div>
+                  <span>Asset green <span style="font-family:var(--mono); color:var(--wc-gray);">#2E8871</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--wc-black);">
+                  <div style="width:14px; height:14px; border-radius:3px; background:#6290AB; flex-shrink:0;"></div>
+                  <span>Insurance blue <span style="font-family:var(--mono); color:var(--wc-gray);">#6290AB</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--wc-black);">
+                  <div style="width:14px; height:14px; border-radius:3px; background:#EDCF79; flex-shrink:0;"></div>
+                  <span>Benefits yellow <span style="font-family:var(--mono); color:var(--wc-gray);">#EDCF79</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#2E8871"><path d="M1 4a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1z"/></svg>
+              Banned phrases
+            </div>
+            <div class="aside-card-body">
+              <div style="display:flex; flex-wrap:wrap; gap:5px;">
+                <span class="tag" style="background:rgba(224,85,85,0.08); color:#C0453F;">holistic</span>
+                <span class="tag" style="background:rgba(224,85,85,0.08); color:#C0453F;">robust</span>
+                <span class="tag" style="background:rgba(224,85,85,0.08); color:#C0453F;">synergistic</span>
+                <span class="tag" style="background:rgba(224,85,85,0.08); color:#C0453F;">journey</span>
+                <span class="tag" style="background:rgba(224,85,85,0.08); color:#C0453F;">trusted advisors</span>
+                <span class="tag" style="background:rgba(224,85,85,0.08); color:#C0453F;">comprehensive</span>
+                <span class="tag" style="background:rgba(224,85,85,0.08); color:#C0453F;">WealthCo Inc.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       PAGE: MODULE 07 — USAGE & CREDITS
+  ════════════════════════════ -->
+  <div id="page-mod-usage" class="page">
+    <div class="content">
+      <div class="module-hero fade-in" style="background: linear-gradient(135deg, #1F1F23 0%, #1a2030 100%);">
+        <svg class="swoops" viewBox="0 0 900 220" fill="none" preserveAspectRatio="none">
+          <path d="M-50 150 Q200 50 450 110 Q650 160 950 50" stroke="#6290AB" stroke-width="1" opacity="0.3"/>
+          <circle cx="820" cy="50" r="120" fill="#6290AB" opacity="0.05"/>
+        </svg>
+        <button class="back-btn" onclick="showPage('dashboard')">← Back to dashboard</button>
+        <div class="module-hero-eyebrow" style="color:#6290AB;">Module 07 · Admin</div>
+        <h1 class="module-hero-title">Usage &amp;<br/><em style="color:#6290AB;">credits</em></h1>
+        <p class="module-hero-desc">How Claude billing works at WealthCo, what drives usage up, how the cap hierarchy works, and what to do if you hit your limit.</p>
+      </div>
+
+      <div class="detail-grid fade-in-2">
+        <div class="detail-main">
+
+          <!-- Two systems explained -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#6290AB"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 2.5a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5zM7.25 6h1.5v5h-1.5V6z"/></svg>
+              <span class="section-block-title">Two systems, one plan</span>
+            </div>
+            <div class="section-block-body">
+              <div class="highlight-box" style="background: linear-gradient(135deg, #1F1F23, #1a2030);">
+                <p>Think of it like a phone plan. <strong>Included usage</strong> is your monthly data — it's already paid for and resets every week. <strong>Extra usage</strong> is like going over your data cap — it kicks in when you exceed your included allocation and costs extra per use.</p>
+              </div>
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">01</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Included usage limit</div>
+                    <div class="tip-desc">Every seat on the Team plan comes with a weekly included usage allocation. This resets every week and is already covered by your seat cost — there's no extra charge for usage within this limit. It's per user, not shared.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">02</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Extra usage spend cap</div>
+                    <div class="tip-desc">When you exceed your included weekly allocation, Claude draws on extra usage — which costs real dollars and counts against the org's monthly spend cap. This resets on the 1st of each month. If the org cap is exhausted, extra usage stops for everyone until it resets.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">03</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Hitting your limit doesn't mean you can't use Claude</div>
+                    <div class="tip-desc">If you hit the extra usage cap, your <em>included</em> weekly allocation still works. You just can't go beyond it until either your weekly usage resets or the org cap resets on the 1st. You are never fully locked out.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cap hierarchy -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#6290AB"><path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z"/></svg>
+              <span class="section-block-title">The three-tier cap hierarchy</span>
+            </div>
+            <div class="section-block-body">
+              <p style="font-size:13px; line-height:1.65; color:var(--wc-gray); font-weight:300; margin-bottom:16px;">There are three nested limits — whichever one is hit first wins.</p>
+              <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">
+                <div style="background:rgba(98,144,171,0.07); border:1px solid rgba(98,144,171,0.18); border-radius:10px; padding:16px 18px; display:flex; gap:14px; align-items:flex-start;">
+                  <div style="font-family:var(--mono); font-size:18px; color:rgba(98,144,171,0.4); letter-spacing:-0.02em; flex-shrink:0; line-height:1.1;">01</div>
+                  <div>
+                    <div style="font-size:13px; font-weight:500; margin-bottom:4px;">Org-wide cap</div>
+                    <div style="font-size:12px; line-height:1.6; color:var(--wc-gray); font-weight:300;">The total monthly extra usage budget for the entire org. Set by the org owner (David). Once this is hit, <em>no one</em> in the org can use extra usage until it resets on the 1st.</div>
+                  </div>
+                </div>
+                <div style="background:rgba(98,144,171,0.05); border:1px solid rgba(98,144,171,0.12); border-radius:10px; padding:16px 18px; display:flex; gap:14px; align-items:flex-start;">
+                  <div style="font-family:var(--mono); font-size:18px; color:rgba(98,144,171,0.3); letter-spacing:-0.02em; flex-shrink:0; line-height:1.1;">02</div>
+                  <div>
+                    <div style="font-size:13px; font-weight:500; margin-bottom:4px;">Seat-type cap</div>
+                    <div style="font-size:12px; line-height:1.6; color:var(--wc-gray); font-weight:300;">A cap applied to all Standard or Premium seats as a group. Currently set to unlimited for both seat types at WealthCo — so this tier isn't actively restricting anyone right now.</div>
+                  </div>
+                </div>
+                <div style="background:rgba(98,144,171,0.03); border:1px solid rgba(98,144,171,0.09); border-radius:10px; padding:16px 18px; display:flex; gap:14px; align-items:flex-start;">
+                  <div style="font-family:var(--mono); font-size:18px; color:rgba(98,144,171,0.2); letter-spacing:-0.02em; flex-shrink:0; line-height:1.1;">03</div>
+                  <div>
+                    <div style="font-size:13px; font-weight:500; margin-bottom:4px;">Individual user cap</div>
+                    <div style="font-size:12px; line-height:1.6; color:var(--wc-gray); font-weight:300;">A per-person monthly extra usage limit. Protects against one person spending the entire org budget. At WealthCo, only Sophie, Bryton, and Yan have spending allowances enabled — all others are set to zero.</div>
+                  </div>
+                </div>
+              </div>
+              <div style="background:rgba(31,31,35,0.04); border-radius:10px; padding:14px 16px;">
+                <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--wc-gray); margin-bottom:8px;">Important: individual caps higher than org cap</div>
+                <p style="font-size:12px; line-height:1.65; color:var(--wc-black); font-weight:300;">If an individual cap is set <em>higher</em> than the org cap, the org cap always wins. For example: if your personal limit is CA$50 but the org cap is CA$200, you can only ever spend up to CA$200 org-wide regardless. Individual limits only meaningfully restrict when they're <em>lower</em> than the remaining org budget.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- What drives usage -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#6290AB"><path d="M8 3.293l5 5V13H3V8.293l5-5zM8 1.5L1.5 8H3v5.5A.5.5 0 0 0 3.5 14h9a.5.5 0 0 0 .5-.5V8h1.5L8 1.5z"/></svg>
+              <span class="section-block-title">What drives usage up</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">01</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Long conversations with many back-and-forth turns</div>
+                    <div class="tip-desc">Each message in a long conversation re-processes the entire conversation history. A 40-turn conversation consumes significantly more than 40 individual short exchanges. This is the #1 driver of high usage at WealthCo.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">02</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Large file uploads</div>
+                    <div class="tip-desc">Uploading large PDFs, spreadsheets, or documents adds significant context that Claude has to process with every response in that conversation.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">03</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Iterative revisions in a single conversation</div>
+                    <div class="tip-desc">Multiple rounds of "change this, now change that" on a single piece of work in one conversation accumulates context fast. Each revision asks Claude to re-read everything before it responds.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">04</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Tool-heavy operations (memory, skill files, search)</div>
+                    <div class="tip-desc">Every time Claude reads a skill file, writes to memory, or runs a web search, it uses additional processing. Sessions with many tool calls (like generating the brand guide or this hub) run heavier than simple writing tasks.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">05</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Using Opus instead of Sonnet</div>
+                    <div class="tip-desc">Opus is a significantly more powerful (and more expensive) model. For most everyday tasks, Sonnet delivers excellent results at a fraction of the cost. Always check your model setting — it should be set to Sonnet by default.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Habit adjustments -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#2E8871"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>
+              <span class="section-block-title">Simple habits that reduce usage</span>
+            </div>
+            <div class="section-block-body">
+              <div class="do-dont-grid">
+                <div class="do-card">
+                  <div class="do-head">✓ Do this</div>
+                  <div class="do-item">Split tasks into separate conversations when you move to a new topic</div>
+                  <div class="do-item">Use Sonnet (not Opus) for everyday writing and analysis</div>
+                  <div class="do-item">Start a fresh conversation for each new project or document</div>
+                  <div class="do-item">Paste summaries rather than entire documents when possible</div>
+                  <div class="do-item">Finish one task fully before pivoting to another in the same chat</div>
+                </div>
+                <div class="dont-card">
+                  <div class="dont-head">✕ Avoid this</div>
+                  <div class="dont-item">Running 20+ revision rounds on one piece in a single conversation</div>
+                  <div class="dont-item">Uploading large files you don't need Claude to fully process</div>
+                  <div class="dont-item">Switching between unrelated tasks in one long conversation</div>
+                  <div class="dont-item">Leaving Opus selected when Sonnet would do the job</div>
+                  <div class="dont-item">Re-uploading the same document across multiple turns</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Self-audit prompt -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#6290AB"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v6A1.5 1.5 0 0 1 12.5 11H9l-3 3v-3H3.5A1.5 1.5 0 0 1 2 9.5v-6z"/></svg>
+              <span class="section-block-title">Self-audit prompt</span>
+            </div>
+            <div class="section-block-body">
+              <p style="font-size:13px; line-height:1.65; color:var(--wc-gray); font-weight:300; margin-bottom:16px;">If you've hit your usage limit or want to understand your usage patterns better, paste this prompt into a new Claude conversation. Claude will analyse your history and give you a usage report.</p>
+              <div style="background:var(--wc-black); border-radius:10px; padding:20px 22px;">
+                <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:rgba(246,246,246,0.3); margin-bottom:12px;">Self-audit prompt — copy and paste into Claude</div>
+                <p style="font-family:var(--mono); font-size:11.5px; line-height:1.75; color:rgba(246,246,246,0.75);">I'd like you to analyze my Claude conversation history and produce a usage report to help with credit planning. Please use the "Search past chats" and "Recent chats" tools to review my activity, then provide:<br><br>
+1. <strong style="color:var(--wc-white);">Activity summary</strong> — how many conversations, and when?<br>
+2. <strong style="color:var(--wc-white);">Task type breakdown</strong> — what am I using Claude for most? Group into categories with rough percentages.<br>
+3. <strong style="color:var(--wc-white);">Usage patterns</strong> — when do I use it most? Any spikes or gaps?<br>
+4. <strong style="color:var(--wc-white);">Conversation depth</strong> — are my conversations short (1–3 turns) or extended?<br>
+5. <strong style="color:var(--wc-white);">Credit tier assessment</strong> — am I a light, moderate, or heavy user?<br>
+6. <strong style="color:var(--wc-white);">Limit analysis</strong> — which sessions appear heaviest? Was hitting my limit a one-off or a pattern?<br>
+7. <strong style="color:var(--wc-white);">Recommendations</strong> — do I need a permanent spending allowance, a buffer, or just habit adjustments?<br><br>
+Be as specific as the data allows, and flag anything you couldn't determine.</p>
+              </div>
+              <div style="margin-top:14px;">
+                <button onclick="showPage('mod-usage-report')" style="display:inline-flex; align-items:center; gap:8px; background:var(--wc-black); color:var(--wc-white); border:none; padding:10px 20px; border-radius:20px; font-family:var(--sans); font-size:12px; font-weight:500; cursor:pointer; letter-spacing:-0.01em; transition:background 0.2s;">
+                  View full report guide &amp; prompts →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Members can't see their own spend -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#6290AB"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+              <span class="section-block-title">What members can and can't see</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">01</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Members cannot see their own spend</div>
+                    <div class="tip-desc">Usage analytics are only visible to Org Owners and Primary Owners. Regular team members don't have a personal spend dashboard — they only find out they've hit their limit when Claude stops allowing extra usage. There's no advance warning.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">02</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Admins can export the spend report</div>
+                    <div class="tip-desc">Dane (as org admin) can download an "Export Spend Report" from the Analytics section in Organisation Settings and share it with the team directly. If you want visibility on your usage, reach out to Dane.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">03</div>
+                  <div class="tip-content">
+                    <div class="tip-title">The self-audit prompt is your best tool</div>
+                    <div class="tip-desc">Since you can't see a dollar amount, the self-audit prompt above is the most practical way to understand your own usage patterns, identify heavy sessions, and get a recommendation on whether you need a higher allowance.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /detail-main -->
+
+        <div class="detail-aside">
+
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#6290AB"><path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3z"/></svg>
+              Reset schedule
+            </div>
+            <div class="aside-card-body">
+              <div class="aside-list-item">Included usage — resets <strong>weekly</strong></div>
+              <div class="aside-list-item">Extra usage org cap — resets <strong>1st of each month</strong></div>
+              <div class="aside-list-item">Individual spend limits — same monthly cycle</div>
+            </div>
+          </div>
+
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#6290AB"><path d="M8 .5a7.5 7.5 0 1 0 0 15A7.5 7.5 0 0 0 8 .5z"/></svg>
+              If you hit your limit
+            </div>
+            <div class="aside-card-body">
+              <div class="aside-list-item">Your weekly included usage still works</div>
+              <div class="aside-list-item">Extra usage resumes on the 1st</div>
+              <div class="aside-list-item">Contact Dane for a temporary adjustment</div>
+              <div class="aside-list-item">Run the self-audit prompt to understand what drove it</div>
+              <div class="aside-list-item">Check your model is set to Sonnet, not Opus</div>
+            </div>
+          </div>
+
+        </div><!-- /detail-aside -->
+      </div><!-- /detail-grid -->
+    </div><!-- /content -->
+  </div><!-- /page-mod-usage -->
+
+  <!-- ════════════════════════════
+       SUBPAGE: USAGE REPORT GUIDE
+  ════════════════════════════ -->
+  <div id="page-mod-usage-report" class="page">
+    <div class="content">
+      <div class="module-hero fade-in" style="background: linear-gradient(135deg, #1F1F23 0%, #1a2030 100%);">
+        <svg class="swoops" viewBox="0 0 900 220" fill="none" preserveAspectRatio="none">
+          <path d="M-50 150 Q200 50 450 110 Q650 160 950 50" stroke="#6290AB" stroke-width="1" opacity="0.3"/>
+          <circle cx="820" cy="50" r="120" fill="#6290AB" opacity="0.05"/>
+        </svg>
+        <button class="back-btn" onclick="showPage('mod-usage')">← Back to usage &amp; credits</button>
+        <div class="module-hero-eyebrow" style="color:#6290AB;">Module 07 · Subpage · v1.0</div>
+        <h1 class="module-hero-title">Claude usage<br/><em style="color:#6290AB;">reporting guide</em></h1>
+        <p class="module-hero-desc">A three-step process to analyse usage activity, consolidate reports, and export a final branded PDF. Run once per person, share with Dane.</p>
+      </div>
+
+      <div class="detail-grid fade-in-2">
+        <div class="detail-main">
+
+          <!-- Purpose -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#6290AB"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 2.5a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5zM7.25 6h1.5v5h-1.5V6z"/></svg>
+              <span class="section-block-title">Purpose</span>
+            </div>
+            <div class="section-block-body">
+              <div class="highlight-box" style="background: linear-gradient(135deg, #1F1F23, #1a2030);">
+                <p>This guide gives every Strike Team member a repeatable, three-step process for analysing Claude usage and producing a final consolidated report — covering both Claude Projects and the main chat. <strong>Each step produces its own PDF. The final PDF is a single branded document covering your full usage, ready to share with Dane.</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- How the flow works -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#6290AB"><path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z"/></svg>
+              <span class="section-block-title">How the flow works</span>
+            </div>
+            <div class="section-block-body">
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">A</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Prompt A — run inside each Claude Project → PDF per Project</div>
+                    <div class="tip-desc">Each Project has its own conversation history. Run Prompt A inside every Project you use. Claude analyses usage and generates a downloadable PDF for that Project. Repeat for each Project.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">B</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Prompt B — run in the main Claude chat → PDF for main chat</div>
+                    <div class="tip-desc">The main Claude.ai chat (outside any Project) holds a separate history. Run Prompt B there. Claude analyses that usage and generates a second downloadable PDF.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">C</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Prompt C — upload all PDFs → one final consolidated PDF</div>
+                    <div class="tip-desc">Open a fresh chat. Upload all PDFs from steps A and B. Run Prompt C. Claude reads the uploaded reports, merges everything, and generates one final branded PDF — the deliverable you share with Dane.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick reference table -->
+              <div style="margin-top:20px; border:var(--border); border-radius:10px; overflow:hidden;">
+                <div style="display:grid; grid-template-columns:80px 1fr 1fr 1fr; background:var(--wc-black);">
+                  <div style="padding:10px 14px; font-family:var(--mono); font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:rgba(246,246,246,0.35);">Prompt</div>
+                  <div style="padding:10px 14px; font-family:var(--mono); font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:rgba(246,246,246,0.35);">Where to run</div>
+                  <div style="padding:10px 14px; font-family:var(--mono); font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:rgba(246,246,246,0.35);">Input</div>
+                  <div style="padding:10px 14px; font-family:var(--mono); font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:rgba(246,246,246,0.35);">Output</div>
+                </div>
+                <div style="display:grid; grid-template-columns:80px 1fr 1fr 1fr; border-bottom:var(--border);">
+                  <div style="padding:10px 14px; font-family:var(--mono); font-size:11px; color:var(--wc-green); font-weight:500;">A</div>
+                  <div style="padding:10px 14px; font-size:12px; color:var(--wc-black); font-weight:300;">Inside each Claude Project (once per Project)</div>
+                  <div style="padding:10px 14px; font-size:12px; color:var(--wc-gray); font-weight:300;">None — Claude reads Project history</div>
+                  <div style="padding:10px 14px; font-size:12px; color:var(--wc-black); font-weight:300;">PDF per Project</div>
+                </div>
+                <div style="display:grid; grid-template-columns:80px 1fr 1fr 1fr; border-bottom:var(--border);">
+                  <div style="padding:10px 14px; font-family:var(--mono); font-size:11px; color:var(--wc-green); font-weight:500;">B</div>
+                  <div style="padding:10px 14px; font-size:12px; color:var(--wc-black); font-weight:300;">Main Claude.ai chat (outside all Projects)</div>
+                  <div style="padding:10px 14px; font-size:12px; color:var(--wc-gray); font-weight:300;">None — Claude reads chat history</div>
+                  <div style="padding:10px 14px; font-size:12px; color:var(--wc-black); font-weight:300;">PDF for main chat</div>
+                </div>
+                <div style="display:grid; grid-template-columns:80px 1fr 1fr 1fr;">
+                  <div style="padding:10px 14px; font-family:var(--mono); font-size:11px; color:var(--wc-green); font-weight:500;">C</div>
+                  <div style="padding:10px 14px; font-size:12px; color:var(--wc-black); font-weight:300;">Any fresh Claude chat</div>
+                  <div style="padding:10px 14px; font-size:12px; color:var(--wc-gray); font-weight:300;">Upload all PDFs from A and B</div>
+                  <div style="padding:10px 14px; font-size:12px; color:var(--wc-black); font-weight:300;">One final consolidated PDF</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt A -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <div style="width:22px; height:22px; border-radius:6px; background:var(--wc-green); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <span style="font-family:var(--mono); font-size:11px; color:var(--wc-white); font-weight:500;">A</span>
+              </div>
+              <span class="section-block-title">Prompt A — Project usage report</span>
+            </div>
+            <div class="section-block-body">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+                <div style="background:rgba(46,136,113,0.07); border:1px solid rgba(46,136,113,0.15); border-radius:8px; padding:12px 14px;">
+                  <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:var(--wc-green); margin-bottom:5px;">Where to run</div>
+                  <div style="font-size:12px; color:var(--wc-black); font-weight:300; line-height:1.55;">Inside each Claude Project you want to include. Run separately in each Project — each holds its own independent history.</div>
+                </div>
+                <div style="background:rgba(46,136,113,0.07); border:1px solid rgba(46,136,113,0.15); border-radius:8px; padding:12px 14px;">
+                  <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:var(--wc-green); margin-bottom:5px;">What you get</div>
+                  <div style="font-size:12px; color:var(--wc-black); font-weight:300; line-height:1.55;">A usage analysis PDF for that Project — conversation volume, task types, usage patterns, conversation depth, credit tier, and heaviest sessions. Download and save for step C.</div>
+                </div>
+              </div>
+              <div style="background:var(--wc-black); border-radius:10px; padding:20px 22px;">
+                <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:rgba(246,246,246,0.3); margin-bottom:12px;">Prompt A — copy and paste into the Claude Project chat</div>
+                <p style="font-family:var(--mono); font-size:11px; line-height:1.8; color:rgba(246,246,246,0.75);">Please analyse the conversation history in this Project and produce a usage report to help with credit planning. Use the search and recent chats tools available to you to review activity, then provide the following:<br><br>
+<strong style="color:var(--wc-white);">1. Activity summary</strong> — How many conversations have taken place in this Project, and roughly when?<br><br>
+<strong style="color:var(--wc-white);">2. Task type breakdown</strong> — What kinds of tasks is this Project being used for most? Group into categories with rough percentages.<br><br>
+<strong style="color:var(--wc-white);">3. Usage patterns</strong> — When does usage tend to occur? Any spikes or gaps?<br><br>
+<strong style="color:var(--wc-white);">4. Conversation depth</strong> — Are conversations typically short (1–3 turns) or extended?<br><br>
+<strong style="color:var(--wc-white);">5. Credit tier assessment</strong> — Is this Project a light, moderate, or heavy usage context?<br><br>
+<strong style="color:var(--wc-white);">6. Heavy session identification</strong> — Which sessions appear to have been the heaviest? Flag one-off intensive sessions versus consistent high usage.<br><br>
+Once the report is complete, generate it as a downloadable PDF with the following formatting:<br>
+- Filename: WCO_Usage_[ProjectName]_[YYYY-MM-DD].pdf<br>
+- Header: "WealthCo. | Claude Usage Report — [Project name]" on a dark background<br>
+- Footer: "INTERNAL — Strike team use only" with page number<br>
+- Colours: near-black #1F1F23 headings, asset green #2E8871 accents, off-white #F6F6F6 background<br>
+- Clean minimal layout with generous spacing<br><br>
+Be as specific as the available history allows. Flag anything you could not determine due to limited data. Provide a download link for the PDF.</p>
+              </div>
+              <div style="margin-top:10px; padding:10px 14px; background:rgba(46,136,113,0.06); border:1px solid rgba(46,136,113,0.12); border-radius:8px; font-size:12px; color:var(--wc-black); font-weight:300; line-height:1.6;">
+                <strong style="font-weight:500;">Tip:</strong> If Claude asks clarifying questions instead of producing the report, add: <em>"Use your best judgment based on available history — do not ask for clarification."</em>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt B -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <div style="width:22px; height:22px; border-radius:6px; background:var(--wc-blue); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <span style="font-family:var(--mono); font-size:11px; color:var(--wc-white); font-weight:500;">B</span>
+              </div>
+              <span class="section-block-title">Prompt B — Main chat usage report</span>
+            </div>
+            <div class="section-block-body">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+                <div style="background:rgba(98,144,171,0.07); border:1px solid rgba(98,144,171,0.15); border-radius:8px; padding:12px 14px;">
+                  <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:var(--wc-blue); margin-bottom:5px;">Where to run</div>
+                  <div style="font-size:12px; color:var(--wc-black); font-weight:300; line-height:1.55;">In the main Claude.ai chat — the interface not inside any Project. Captures ad hoc work done outside Projects. If your team doesn't use the main chat, skip this step.</div>
+                </div>
+                <div style="background:rgba(98,144,171,0.07); border:1px solid rgba(98,144,171,0.15); border-radius:8px; padding:12px 14px;">
+                  <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:var(--wc-blue); margin-bottom:5px;">What you get</div>
+                  <div style="font-size:12px; color:var(--wc-black); font-weight:300; line-height:1.55;">A usage analysis PDF for the main chat — same structure as the Project report. Download and save alongside your Prompt A PDFs for use in step C.</div>
+                </div>
+              </div>
+              <div style="background:var(--wc-black); border-radius:10px; padding:20px 22px;">
+                <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:rgba(246,246,246,0.3); margin-bottom:12px;">Prompt B — copy and paste into the main Claude.ai chat</div>
+                <p style="font-family:var(--mono); font-size:11px; line-height:1.8; color:rgba(246,246,246,0.75);">Please analyse my Claude conversation history outside of any Project context and produce a usage report to help with credit planning. Use the search and recent chats tools available to you to review activity, then provide the following:<br><br>
+<strong style="color:var(--wc-white);">1. Activity summary</strong> — How many conversations have I had in the main chat, and roughly when?<br><br>
+<strong style="color:var(--wc-white);">2. Task type breakdown</strong> — What kinds of tasks am I using Claude for most in the main chat? Group into categories with rough percentages.<br><br>
+<strong style="color:var(--wc-white);">3. Usage patterns</strong> — When do I tend to use Claude most? Any spikes or gaps?<br><br>
+<strong style="color:var(--wc-white);">4. Conversation depth</strong> — Are my conversations typically short (1–3 turns) or extended?<br><br>
+<strong style="color:var(--wc-white);">5. Credit tier assessment</strong> — Would you estimate I am a light, moderate, or heavy user in the main chat?<br><br>
+<strong style="color:var(--wc-white);">6. Heavy session identification</strong> — Which sessions appear to have been the heaviest? Flag one-off intensive sessions versus consistent high usage.<br><br>
+Once the report is complete, generate it as a downloadable PDF with the following formatting:<br>
+- Filename: WCO_Usage_MainChat_[YYYY-MM-DD].pdf<br>
+- Header: "WealthCo. | Claude Usage Report — Main Chat" on a dark background<br>
+- Footer: "INTERNAL — Strike team use only" with page number<br>
+- Colours: near-black #1F1F23 headings, asset green #2E8871 accents, off-white #F6F6F6 background<br>
+- Clean minimal layout with generous spacing<br><br>
+Be as specific as the available history allows. Flag anything you could not determine due to limited data. Provide a download link for the PDF.</p>
+              </div>
+              <div style="margin-top:10px; padding:10px 14px; background:rgba(98,144,171,0.06); border:1px solid rgba(98,144,171,0.12); border-radius:8px; font-size:12px; color:var(--wc-black); font-weight:300; line-height:1.6;">
+                <strong style="font-weight:500;">Note:</strong> Claude can search past conversations using its built-in tools, but availability may vary. If Claude reports limited history, it will flag this in the PDF — partial data is still useful.
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt C -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <div style="width:22px; height:22px; border-radius:6px; background:#BD9521; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <span style="font-family:var(--mono); font-size:11px; color:var(--wc-white); font-weight:500;">C</span>
+              </div>
+              <span class="section-block-title">Prompt C — Final consolidated report</span>
+            </div>
+            <div class="section-block-body">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+                <div style="background:rgba(189,149,33,0.07); border:1px solid rgba(189,149,33,0.2); border-radius:8px; padding:12px 14px;">
+                  <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:#BD9521; margin-bottom:5px;">Where to run</div>
+                  <div style="font-size:12px; color:var(--wc-black); font-weight:300; line-height:1.55;">In a fresh Claude chat. Do not run inside an existing Project or active conversation — start a new chat so there is no conflicting context.</div>
+                </div>
+                <div style="background:rgba(189,149,33,0.07); border:1px solid rgba(189,149,33,0.2); border-radius:8px; padding:12px 14px;">
+                  <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:#BD9521; margin-bottom:5px;">Before you run it</div>
+                  <div style="font-size:12px; color:var(--wc-black); font-weight:300; line-height:1.55;">Upload every PDF from Prompt A (one per Project) and the PDF from Prompt B. Wait for all uploads to complete before pasting the prompt.</div>
+                </div>
+              </div>
+
+              <!-- Step by step -->
+              <div style="background:rgba(31,31,35,0.04); border-radius:10px; padding:16px 18px; margin-bottom:16px;">
+                <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--wc-gray); margin-bottom:12px;">Steps before running Prompt C</div>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  <div style="display:flex; gap:12px; align-items:flex-start; font-size:12px; color:var(--wc-black); font-weight:300;">
+                    <span style="font-family:var(--mono); color:var(--wc-green); flex-shrink:0; font-size:10px; padding-top:1px;">01</span>Open a new Claude chat
+                  </div>
+                  <div style="display:flex; gap:12px; align-items:flex-start; font-size:12px; color:var(--wc-black); font-weight:300;">
+                    <span style="font-family:var(--mono); color:var(--wc-green); flex-shrink:0; font-size:10px; padding-top:1px;">02</span>Upload every PDF downloaded from Prompt A (one per Project)
+                  </div>
+                  <div style="display:flex; gap:12px; align-items:flex-start; font-size:12px; color:var(--wc-black); font-weight:300;">
+                    <span style="font-family:var(--mono); color:var(--wc-green); flex-shrink:0; font-size:10px; padding-top:1px;">03</span>Upload the PDF downloaded from Prompt B (main chat)
+                  </div>
+                  <div style="display:flex; gap:12px; align-items:flex-start; font-size:12px; color:var(--wc-black); font-weight:300;">
+                    <span style="font-family:var(--mono); color:var(--wc-green); flex-shrink:0; font-size:10px; padding-top:1px;">04</span>Paste Prompt C below and send
+                  </div>
+                </div>
+              </div>
+
+              <div style="background:var(--wc-black); border-radius:10px; padding:20px 22px; margin-bottom:10px;">
+                <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:rgba(246,246,246,0.3); margin-bottom:12px;">Prompt C — copy and paste after uploading all PDFs (send as one message)</div>
+                <p style="font-family:var(--mono); font-size:11px; line-height:1.8; color:rgba(246,246,246,0.75);">I have uploaded a set of Claude usage report PDFs — one or more from individual Projects and one from the main chat. Please read all of them and consolidate the findings into a single unified usage report for the WealthCo strike team.<br><br>
+Produce the report as a downloadable PDF. Use the following design system:<br><br>
+<strong style="color:var(--wc-white);">COLOURS &amp; TYPOGRAPHY</strong><br>
+- Page background: #F6F6F6 · Primary text / dark sections: #1F1F23<br>
+- Secondary text / labels: #635E6E · Green accent: #2E8871<br>
+- Green highlight (headlines): #31D8AE · Blue accent: #306F93<br>
+- Yellow (tier badge): #BD9521<br>
+- Clean sans-serif for body, monospace for labels/tags/numbers<br><br>
+<strong style="color:var(--wc-white);">HEADER</strong> — full-width dark block<br>
+"WealthCo." wordmark top-left · Large title: "Claude AI usage report" · Subtitle: scope description · Meta row: Prepared for / Report date / Status / Scope<br><br>
+<strong style="color:var(--wc-white);">SECTION STRUCTURE (numbered 01–07)</strong><br>
+01 Activity summary — project stat boxes, date range, aggregate bar<br>
+02 Task type breakdown — table with category, % share, visual bar, description<br>
+03 Usage patterns — two side-by-side info boxes per context<br>
+04 Conversation depth — horizontal bar rows + key depth factors info box<br>
+05 Credit tier assessment — tier badge (yellow pill), two info boxes per context<br>
+06 Limit analysis — session table with impact ratings, verdict box<br>
+07 Recommendations — dark card, recommendation point boxes, optimisations list, caveat box<br><br>
+FOOTER: dark bar — WealthCo. wordmark, report meta, page number.<br>
+Filename: WCO_Claude_Usage_Report_[YYYY-MM-DD].pdf<br><br>
+Do not add information that was not in the source PDFs. Flag any data gaps explicitly. Provide a download link for the final PDF.</p>
+              </div>
+              <div style="padding:10px 14px; background:rgba(189,149,33,0.07); border:1px solid rgba(189,149,33,0.18); border-radius:8px; font-size:12px; color:var(--wc-black); font-weight:300; line-height:1.6;">
+                <strong style="font-weight:500;">What you get:</strong> A single branded PDF with a dark header, project stat boxes, task breakdown table, depth meters, session impact table, and recommendation cards — ready to share directly with Dane.
+              </div>
+            </div>
+          </div>
+
+          <!-- Troubleshooting -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#6290AB"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/></svg>
+              <span class="section-block-title">Tips &amp; troubleshooting</span>
+            </div>
+            <div class="section-block-body">
+              <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  Claude asks questions instead of producing the report
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 12.53a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0-1.06-1.06L8 10.94 4.03 6.97a.75.75 0 0 0-1.06 1.06l4.5 4.5z"/></svg>
+                </button>
+                <div class="accordion-body">Add this line to the end of the prompt: <em>"Use your best judgment based on available history — do not ask for clarification."</em></div>
+              </div>
+              <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  Claude says it cannot access conversation history
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 12.53a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0-1.06-1.06L8 10.94 4.03 6.97a.75.75 0 0 0-1.06 1.06l4.5 4.5z"/></svg>
+                </button>
+                <div class="accordion-body">Claude uses built-in search and recent chats tools to read history. If it says these are unavailable, try running the prompt again in a fresh chat. Tool availability can occasionally vary by session.</div>
+              </div>
+              <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  The PDF from Prompt C does not download
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 12.53a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0-1.06-1.06L8 10.94 4.03 6.97a.75.75 0 0 0-1.06 1.06l4.5 4.5z"/></svg>
+                </button>
+                <div class="accordion-body">If Claude produces the report but no link, ask: <em>"Please generate this as a downloadable PDF file and provide a link."</em> If it still fails, ask Claude to output it as a self-contained HTML file instead — open in any browser, then use File → Print → Save as PDF.</div>
+              </div>
+              <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  Prompt C does not read one of the uploaded PDFs
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 12.53a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0-1.06-1.06L8 10.94 4.03 6.97a.75.75 0 0 0-1.06 1.06l4.5 4.5z"/></svg>
+                </button>
+                <div class="accordion-body">Make sure all files were fully uploaded before sending the prompt. If a file is large, wait for the upload indicator to complete. You can also ask: <em>"Please confirm how many PDFs you have received before proceeding."</em></div>
+              </div>
+              <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  You only have one Project and no main chat usage
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 12.53a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0-1.06-1.06L8 10.94 4.03 6.97a.75.75 0 0 0-1.06 1.06l4.5 4.5z"/></svg>
+                </button>
+                <div class="accordion-body">Skip Prompt B. Run Prompt A once, download the PDF, then upload just that one file for Prompt C.</div>
+              </div>
+              <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  The report covers the wrong time period
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 12.53a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0-1.06-1.06L8 10.94 4.03 6.97a.75.75 0 0 0-1.06 1.06l4.5 4.5z"/></svg>
+                </button>
+                <div class="accordion-body">Add a date range to Prompts A and B: <em>"Focus on activity from [start date] to [end date]."</em></div>
+              </div>
+              <div class="accordion-item">
+                <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                  History is limited because the Project or account is new
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.47 12.53a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 0 0-1.06-1.06L8 10.94 4.03 6.97a.75.75 0 0 0-1.06 1.06l4.5 4.5z"/></svg>
+                </button>
+                <div class="accordion-body">Claude will flag limited data in the PDF output. Partial data still gives useful directional insight — note the limitation when sharing the consolidated report with Dane.</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /detail-main -->
+
+        <div class="detail-aside">
+
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#6290AB"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1z"/></svg>
+              At a glance
+            </div>
+            <div class="aside-card-body">
+              <div class="aside-list-item">Prompt A → one PDF per Project</div>
+              <div class="aside-list-item">Prompt B → one PDF for main chat</div>
+              <div class="aside-list-item">Prompt C → upload all PDFs → final report</div>
+              <div class="aside-list-item">Share final PDF with Dane</div>
+            </div>
+          </div>
+
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#2E8871"><path d="M1 11a1 1 0 0 1 1-1h2v4H1v-3z"/></svg>
+              PDF naming convention
+            </div>
+            <div class="aside-card-body">
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <div style="font-size:11px; color:var(--wc-black); font-weight:300; line-height:1.5;">
+                  <span style="font-family:var(--mono); color:var(--wc-green); font-size:10px;">A</span> &nbsp;WCO_Usage_[ProjectName]_[YYYY-MM-DD].pdf
+                </div>
+                <div style="font-size:11px; color:var(--wc-black); font-weight:300; line-height:1.5;">
+                  <span style="font-family:var(--mono); color:var(--wc-blue); font-size:10px;">B</span> &nbsp;WCO_Usage_MainChat_[YYYY-MM-DD].pdf
+                </div>
+                <div style="font-size:11px; color:var(--wc-black); font-weight:300; line-height:1.5;">
+                  <span style="font-family:var(--mono); color:#BD9521; font-size:10px;">C</span> &nbsp;WCO_Claude_Usage_Report_[YYYY-MM-DD].pdf
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#6290AB"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2z"/></svg>
+              Document info
+            </div>
+            <div class="aside-card-body">
+              <div class="aside-list-item">Version 1.0 · April 2026</div>
+              <div class="aside-list-item">Prepared by Dane Solon</div>
+              <div class="aside-list-item">SharePoint Governance Project</div>
+              <div class="aside-list-item">Internal use only</div>
+            </div>
+          </div>
+
+        </div><!-- /detail-aside -->
+      </div><!-- /detail-grid -->
+    </div><!-- /content -->
+  </div><!-- /page-mod-usage-report -->
+  <div id="page-mod-ia-brand" class="page">
+    <div class="content">
+      <div class="module-hero fade-in" style="background: linear-gradient(135deg, #161E1E 0%, #1e3030 100%);">
+        <svg class="swoops" viewBox="0 0 900 220" fill="none" preserveAspectRatio="none">
+          <path d="M-50 150 Q200 50 450 110 Q650 160 950 50" stroke="#81B2B4" stroke-width="1" opacity="0.3"/>
+          <path d="M-50 200 Q250 80 500 140 Q700 190 960 80" stroke="#267173" stroke-width="0.7" opacity="0.2"/>
+          <circle cx="820" cy="50" r="130" fill="#267173" opacity="0.06"/>
+          <circle cx="820" cy="50" r="70" fill="#81B2B4" opacity="0.05"/>
+        </svg>
+        <button class="back-btn" onclick="showPage('dashboard')">← Back to dashboard</button>
+        <div class="module-hero-eyebrow" style="color:#81B2B4;">Module 06 · IA brand</div>
+        <h1 class="module-hero-title">Integrated<br/><em style="color:#81B2B4;">Advisory™</em></h1>
+        <p class="module-hero-desc">Brand voice, CPA-focused writing, visual identity, and the slash command guide for Integrated Advisory content.</p>
+      </div>
+
+      <div class="detail-grid fade-in-2">
+        <div class="detail-main">
+
+          <!-- Who IA is -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#267173"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 2.5a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5zM7.25 6h1.5v5h-1.5V6z"/></svg>
+              <span class="section-block-title">What is Integrated Advisory™?</span>
+            </div>
+            <div class="section-block-body">
+              <div class="highlight-box" style="background: linear-gradient(135deg, #161E1E, #1e2e2e);">
+                <p>Integrated Advisory™ is a professional development model and advisory network for CPA firms in Canada. It helps accountants evolve from compliance-only providers into <strong>trusted advisors — the orchestrator at the centre of their clients' financial lives.</strong></p>
+              </div>
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">01</div>
+                  <div class="tip-content">
+                    <div class="tip-title">It speaks to CPAs, not end consumers</div>
+                    <div class="tip-desc">Every piece of IA content is written for the experienced accounting professional who is ready to think bigger about their practice — never for their clients directly.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">02</div>
+                  <div class="tip-content">
+                    <div class="tip-title">The CPA as orchestrator</div>
+                    <div class="tip-desc">The core belief: CPAs are the most trusted professional in their clients' lives. IA content helps them activate that trust — moving from answering questions to leading conversations, from filing returns to shaping futures.</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">03</div>
+                  <div class="tip-content">
+                    <div class="tip-title">The enemy: the compliance ceiling</div>
+                    <div class="tip-desc">Compliance revenue has a ceiling. IA content consistently names this tension — respectfully, not dismissively — and frames advisory as the path beyond it.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slash command -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#267173"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v6A1.5 1.5 0 0 1 12.5 11H9l-3 3v-3H3.5A1.5 1.5 0 0 1 2 9.5v-6z"/></svg>
+              <span class="section-block-title">The slash command</span>
+            </div>
+            <div class="section-block-body">
+              <div style="background: linear-gradient(135deg, #161E1E, #1e2e2e); border-radius:10px; padding:20px 22px; margin-bottom:18px;">
+                <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:rgba(246,246,246,0.3); margin-bottom:10px;">Command</div>
+                <div style="font-family:var(--mono); font-size:15px; color:#81B2B4; letter-spacing:0.02em; margin-bottom:12px;">/integrated-advisory-brand</div>
+                <p style="font-size:12px; line-height:1.65; color:rgba(246,246,246,0.6); font-weight:300;">Activates full IA brand guidelines — warm cream palette, deep teal gradient, Reckless Neue/Graphik typography, peer/collegial voice for CPAs, orchestrator framing, and sales-language avoidance.</p>
+              </div>
+              <div class="tips-list">
+                <div class="tip-item">
+                  <div class="tip-num">01</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Write for CPAs, not clients</div>
+                    <div class="tip-desc">IA content always addresses the CPA as a respected peer — collegial, direct, authoritative. Never consumer-facing, never condescending toward the profession.</div>
+                    <div class="tip-prompt">"/integrated-advisory-brand — Write a LinkedIn post for a CPA firm owner considering whether to add advisory services."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">02</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Brand review</div>
+                    <div class="tip-desc">Paste a draft and ask Claude to flag anything off-brand — wrong terminology, sales language, naming errors, or consumer-facing framing.</div>
+                    <div class="tip-prompt">"/integrated-advisory-brand — Review this draft against IA brand standards and flag anything off."</div>
+                  </div>
+                </div>
+                <div class="tip-item">
+                  <div class="tip-num">03</div>
+                  <div class="tip-content">
+                    <div class="tip-title">Article writing</div>
+                    <div class="tip-desc">IA articles follow a structured pattern: opening tension → insight or reframe → practical framework → client-outcome anchor → closing invitation. Ask Claude to follow this.</div>
+                    <div class="tip-prompt">"/integrated-advisory-brand — Write a thought leadership article for CPA firm owners on the value of becoming an orchestrator. Follow the IA article structure."</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Voice & tone -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#267173"><path d="M1 4a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1zm0 4a1 1 0 0 1 1-1h8a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1zm0 4a1 1 0 0 1 1-1h6a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1z"/></svg>
+              <span class="section-block-title">Voice &amp; tone</span>
+            </div>
+            <div class="section-block-body">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px;">
+                <div style="background:rgba(38,113,115,0.07); border:1px solid rgba(38,113,115,0.15); border-radius:10px; padding:16px;">
+                  <div style="font-size:11px; font-weight:500; color:#267173; margin-bottom:10px;">Voice qualities</div>
+                  <div style="font-size:12px; line-height:1.7; color:var(--wc-black); font-weight:300; border-bottom:1px solid rgba(31,31,35,0.06); padding:4px 0;">Collegial — peer, not vendor</div>
+                  <div style="font-size:12px; line-height:1.7; color:var(--wc-black); font-weight:300; border-bottom:1px solid rgba(31,31,35,0.06); padding:4px 0;">Direct and confident — no hedging</div>
+                  <div style="font-size:12px; line-height:1.7; color:var(--wc-black); font-weight:300; border-bottom:1px solid rgba(31,31,35,0.06); padding:4px 0;">Practical — every insight connects to action</div>
+                  <div style="font-size:12px; line-height:1.7; color:var(--wc-black); font-weight:300; border-bottom:1px solid rgba(31,31,35,0.06); padding:4px 0;">Warm but not soft — honest about difficulty</div>
+                  <div style="font-size:12px; line-height:1.7; color:var(--wc-black); font-weight:300; padding:4px 0;">Respectful of the CPA profession</div>
+                </div>
+                <div style="background:rgba(38,113,115,0.07); border:1px solid rgba(38,113,115,0.15); border-radius:10px; padding:16px;">
+                  <div style="font-size:11px; font-weight:500; color:#267173; margin-bottom:10px;">Tone by content type</div>
+                  <div style="font-size:12px; line-height:1.7; color:var(--wc-black); font-weight:300; border-bottom:1px solid rgba(31,31,35,0.06); padding:4px 0;"><strong style="font-weight:500;">Articles</strong> — authoritative, reflective</div>
+                  <div style="font-size:12px; line-height:1.7; color:var(--wc-black); font-weight:300; border-bottom:1px solid rgba(31,31,35,0.06); padding:4px 0;"><strong style="font-weight:500;">Practice guides</strong> — direct, step-by-step</div>
+                  <div style="font-size:12px; line-height:1.7; color:var(--wc-black); font-weight:300; border-bottom:1px solid rgba(31,31,35,0.06); padding:4px 0;"><strong style="font-weight:500;">Social media</strong> — punchy, question-driven</div>
+                  <div style="font-size:12px; line-height:1.7; color:var(--wc-black); font-weight:300; border-bottom:1px solid rgba(31,31,35,0.06); padding:4px 0;"><strong style="font-weight:500;">Events/webinars</strong> — energetic, benefit-forward</div>
+                  <div style="font-size:12px; line-height:1.7; color:var(--wc-black); font-weight:300; padding:4px 0;"><strong style="font-weight:500;">Member emails</strong> — warm, collegial</div>
+                </div>
+              </div>
+
+              <!-- Article structure -->
+              <div style="border:var(--border); border-radius:10px; padding:16px 18px;">
+                <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:#267173; margin-bottom:12px;">IA article structure</div>
+                <div style="display:flex; flex-direction:column; gap:0;">
+                  <div style="display:flex; gap:12px; padding:9px 0; border-bottom:1px solid rgba(31,31,35,0.06); align-items:flex-start;">
+                    <div style="font-family:var(--mono); font-size:10px; color:#81B2B4; flex-shrink:0; padding-top:1px;">01</div>
+                    <div><strong style="font-size:12px; font-weight:500;">Opening tension or observation</strong><span style="font-size:12px; color:var(--wc-gray); font-weight:300;"> — name a real challenge the audience is experiencing. Never start with "we".</span></div>
+                  </div>
+                  <div style="display:flex; gap:12px; padding:9px 0; border-bottom:1px solid rgba(31,31,35,0.06); align-items:flex-start;">
+                    <div style="font-family:var(--mono); font-size:10px; color:#81B2B4; flex-shrink:0; padding-top:1px;">02</div>
+                    <div><strong style="font-size:12px; font-weight:500;">The insight or reframe</strong><span style="font-size:12px; color:var(--wc-gray); font-weight:300;"> — a new way of seeing the issue through the IA lens.</span></div>
+                  </div>
+                  <div style="display:flex; gap:12px; padding:9px 0; border-bottom:1px solid rgba(31,31,35,0.06); align-items:flex-start;">
+                    <div style="font-family:var(--mono); font-size:10px; color:#81B2B4; flex-shrink:0; padding-top:1px;">03</div>
+                    <div><strong style="font-size:12px; font-weight:500;">Practical framework or steps</strong><span style="font-size:12px; color:var(--wc-gray); font-weight:300;"> — something the CPA can actually use. Questions, frameworks, tactics.</span></div>
+                  </div>
+                  <div style="display:flex; gap:12px; padding:9px 0; border-bottom:1px solid rgba(31,31,35,0.06); align-items:flex-start;">
+                    <div style="font-family:var(--mono); font-size:10px; color:#81B2B4; flex-shrink:0; padding-top:1px;">04</div>
+                    <div><strong style="font-size:12px; font-weight:500;">Client-outcome anchor</strong><span style="font-size:12px; color:var(--wc-gray); font-weight:300;"> — connect back to what this means for business-owner clients.</span></div>
+                  </div>
+                  <div style="display:flex; gap:12px; padding:9px 0; align-items:flex-start;">
+                    <div style="font-family:var(--mono); font-size:10px; color:#81B2B4; flex-shrink:0; padding-top:1px;">05</div>
+                    <div><strong style="font-size:12px; font-weight:500;">Closing invitation</strong><span style="font-size:12px; color:var(--wc-gray); font-weight:300;"> — a gentle but clear call to reflection or action. Not a hard sell.</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Do/Don't -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#267173"><path d="M3 2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H3z"/></svg>
+              <span class="section-block-title">Brand rules</span>
+            </div>
+            <div class="section-block-body">
+              <div class="do-dont-grid">
+                <div class="do-card" style="background:rgba(38,113,115,0.07); border-color:rgba(38,113,115,0.18);">
+                  <div class="do-head" style="color:#267173;">✓ Always do this</div>
+                  <div class="do-item">Write "Integrated Advisory™" with ™ on first reference</div>
+                  <div class="do-item">Write for CPAs as a respected peer</div>
+                  <div class="do-item">Reinforce CPA as "orchestrator" and "centre of influence"</div>
+                  <div class="do-item">Use "member firm" (not "partner firm" or "network firm")</div>
+                  <div class="do-item">Use deep teal gradient — never flat solid teal in hero contexts</div>
+                  <div class="do-item">Use Reckless Neue for headlines, Graphik for body</div>
+                  <div class="do-item">Connect every insight to practical CPA action</div>
+                </div>
+                <div class="dont-card">
+                  <div class="dont-head">✕ Never do this</div>
+                  <div class="dont-item">Use "IAN" or "Integrated Advisory Professionals Network" in brand copy</div>
+                  <div class="dont-item">Use "sales", "upselling", "cross-sell", "pitch", or "product"</div>
+                  <div class="dont-item">Write content that sounds like a vendor or consultant</div>
+                  <div class="dont-item">Write for end consumers — always address CPAs</div>
+                  <div class="dont-item">Use flat solid teal as a hero background</div>
+                  <div class="dont-item">Use "IA firm" — use "member firm" instead</div>
+                  <div class="dont-item">Mix IA and WealthCo visual elements</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WCO vs IA comparison -->
+          <div class="section-block">
+            <div class="section-block-header">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="#267173"><path d="M1 4a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1z"/></svg>
+              <span class="section-block-title">WealthCo vs Integrated Advisory at a glance</span>
+            </div>
+            <div class="section-block-body">
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; border:var(--border); border-radius:10px; overflow:hidden;">
+                <div style="padding:10px 14px; background:rgba(31,31,35,0.03); font-family:var(--mono); font-size:9px; letter-spacing:0.06em; text-transform:uppercase; color:var(--wc-gray); border-bottom:var(--border);">Element</div>
+                <div style="padding:10px 14px; background:rgba(46,136,113,0.07); font-family:var(--mono); font-size:9px; letter-spacing:0.06em; text-transform:uppercase; color:var(--wc-green); border-bottom:var(--border);">WealthCo</div>
+                <div style="padding:10px 14px; background:rgba(38,113,115,0.07); font-family:var(--mono); font-size:9px; letter-spacing:0.06em; text-transform:uppercase; color:#267173; border-bottom:var(--border);">Integrated Advisory</div>
+
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-gray); border-bottom:var(--border);">Audience</div>
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-black); border-bottom:var(--border);">Business owners, HNW families</div>
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-black); border-bottom:var(--border);">CPA firm owners &amp; partners</div>
+
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-gray); border-bottom:var(--border);">Background</div>
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-black); border-bottom:var(--border);">Cool off-white #F6F6F6</div>
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-black); border-bottom:var(--border);">Warm cream #FDFAF8 (gradient)</div>
+
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-gray); border-bottom:var(--border);">Headline font</div>
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-black); border-bottom:var(--border);">Suisse Int'l (sans-serif)</div>
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-black); border-bottom:var(--border);">Reckless Neue (serif)</div>
+
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-gray); border-bottom:var(--border);">Brand colour</div>
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-black); border-bottom:var(--border);">Teal gray + almost black (flat)</div>
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-black); border-bottom:var(--border);">Deep teal gradient</div>
+
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-gray); border-bottom:var(--border);">Default tone</div>
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-black); border-bottom:var(--border);">Challenger (Tone 4)</div>
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-black); border-bottom:var(--border);">Respected peer, collegial</div>
+
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-gray);">Overall feel</div>
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-black);">Minimal, precise, modern</div>
+                <div style="padding:9px 14px; font-size:12px; color:var(--wc-black);">Editorial, warm, elevated</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /detail-main -->
+
+        <div class="detail-aside">
+
+          <!-- IA colours -->
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#267173"><path d="M3 2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H3z"/></svg>
+              IA colour tokens
+            </div>
+            <div class="aside-card-body">
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--wc-black);">
+                  <div style="width:14px; height:14px; border-radius:3px; background:linear-gradient(135deg,#FDFAF8,#F8F4F1); border:1px solid rgba(31,31,35,0.1); flex-shrink:0;"></div>
+                  <span>White gradient <span style="font-family:var(--mono); color:var(--wc-gray);">#FDFAF8</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--wc-black);">
+                  <div style="width:14px; height:14px; border-radius:3px; background:linear-gradient(135deg,#267173,#81B2B4); flex-shrink:0;"></div>
+                  <span>Deep teal gradient <span style="font-family:var(--mono); color:var(--wc-gray);">#267173→#81B2B4</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--wc-black);">
+                  <div style="width:14px; height:14px; border-radius:3px; background:linear-gradient(135deg,#161E1E,#384B4A); flex-shrink:0;"></div>
+                  <span>Midnight gradient <span style="font-family:var(--mono); color:var(--wc-gray);">#161E1E→#384B4A</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--wc-black);">
+                  <div style="width:14px; height:14px; border-radius:3px; background:#F2EEEB; border:1px solid rgba(31,31,35,0.1); flex-shrink:0;"></div>
+                  <span>Off-white gradient <span style="font-family:var(--mono); color:var(--wc-gray);">#F2EEEB</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--wc-black);">
+                  <div style="width:14px; height:14px; border-radius:3px; background:linear-gradient(135deg,#8FC1C3,#9DCECF); flex-shrink:0;"></div>
+                  <span>Bright teal gradient <span style="font-family:var(--mono); color:var(--wc-gray);">#8FC1C3→#9DCECF</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Key phrases -->
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#267173"><path d="M1 4a1 1 0 0 1 1-1h4a1 1 0 0 1 0 2H2a1 1 0 0 1-1-1z"/></svg>
+              Key IA phrases
+            </div>
+            <div class="aside-card-body">
+              <div style="display:flex; flex-wrap:wrap; gap:5px;">
+                <span class="tag" style="background:rgba(38,113,115,0.1); color:#267173;">Centre of influence</span>
+                <span class="tag" style="background:rgba(38,113,115,0.1); color:#267173;">Orchestrator</span>
+                <span class="tag" style="background:rgba(38,113,115,0.1); color:#267173;">Compliance ceiling</span>
+                <span class="tag" style="background:rgba(38,113,115,0.1); color:#267173;">Long game</span>
+                <span class="tag" style="background:rgba(38,113,115,0.1); color:#267173;">Coordinated advice</span>
+                <span class="tag" style="background:rgba(38,113,115,0.1); color:#267173;">Beyond the balance sheet</span>
+                <span class="tag" style="background:rgba(38,113,115,0.1); color:#267173;">Planning gaps surface naturally</span>
+                <span class="tag" style="background:rgba(38,113,115,0.1); color:#267173;">Advisory-minded</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Banned phrases -->
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#C0453F"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14z" opacity="0.3"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+              Language to avoid
+            </div>
+            <div class="aside-card-body">
+              <div style="display:flex; flex-direction:column; gap:5px;">
+                <div style="font-size:11.5px; color:var(--wc-black); display:flex; gap:8px; padding:5px 0; border-bottom:1px solid rgba(31,31,35,0.05);">
+                  <span style="color:#C0453F; flex-shrink:0;">✕</span>
+                  <span>"Sales" / "selling" → <em style="color:var(--wc-gray);">use "advisory conversations"</em></span>
+                </div>
+                <div style="font-size:11.5px; color:var(--wc-black); display:flex; gap:8px; padding:5px 0; border-bottom:1px solid rgba(31,31,35,0.05);">
+                  <span style="color:#C0453F; flex-shrink:0;">✕</span>
+                  <span>"Upselling" → <em style="color:var(--wc-gray);">"identifying planning needs"</em></span>
+                </div>
+                <div style="font-size:11.5px; color:var(--wc-black); display:flex; gap:8px; padding:5px 0; border-bottom:1px solid rgba(31,31,35,0.05);">
+                  <span style="color:#C0453F; flex-shrink:0;">✕</span>
+                  <span>"Cross-sell" → <em style="color:var(--wc-gray);">"expanding the conversation"</em></span>
+                </div>
+                <div style="font-size:11.5px; color:var(--wc-black); display:flex; gap:8px; padding:5px 0; border-bottom:1px solid rgba(31,31,35,0.05);">
+                  <span style="color:#C0453F; flex-shrink:0;">✕</span>
+                  <span>"Pitch" → <em style="color:var(--wc-gray);">"conversation" / "framing"</em></span>
+                </div>
+                <div style="font-size:11.5px; color:var(--wc-black); display:flex; gap:8px; padding:5px 0; border-bottom:1px solid rgba(31,31,35,0.05);">
+                  <span style="color:#C0453F; flex-shrink:0;">✕</span>
+                  <span>"IAN" → <em style="color:var(--wc-gray);">"Integrated Advisory™"</em></span>
+                </div>
+                <div style="font-size:11.5px; color:var(--wc-black); display:flex; gap:8px; padding:5px 0;">
+                  <span style="color:#C0453F; flex-shrink:0;">✕</span>
+                  <span>"IA firm" → <em style="color:var(--wc-gray);">"member firm"</em></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Naming reference -->
+          <div class="aside-card">
+            <div class="aside-card-header">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="#267173"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2z"/></svg>
+              Naming rules
+            </div>
+            <div class="aside-card-body">
+              <div class="aside-list-item">Brand copy: "Integrated Advisory™"</div>
+              <div class="aside-list-item">™ required on first prominent reference</div>
+              <div class="aside-list-item">Legal only: "Integrated Advisory Professionals Network, Inc."</div>
+              <div class="aside-list-item">Member firms: "member firm" not "partner" or "network"</div>
+              <div class="aside-list-item">Never shorten to "IAN" in any context</div>
+            </div>
+          </div>
+
+        </div><!-- /detail-aside -->
+      </div><!-- /detail-grid -->
+    </div><!-- /content -->
+  </div><!-- /page-mod-ia-brand -->
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const page = document.getElementById('page-' + id);
+    if (page) {
+      page.classList.add('active');
+      page.querySelectorAll('.fade-in, .fade-in-2, .fade-in-3, .fade-in-4').forEach(el => {
+        el.style.animation = 'none';
+        el.offsetHeight;
+        el.style.animation = '';
+      });
+    }
+    const navMap = {
+      'dashboard': 0,
+      'mod-getting-started': 1,
+      'mod-prompting': 2,
+      'mod-use-cases': 3,
+      'mod-tips': 4,
+      'mod-brand': 5,
+      'mod-ia-brand': 6,
+      'mod-usage': 7,
+      'mod-usage-report': 7,
+    };
+    const navItems = document.querySelectorAll('.nav-item');
+    const idx = navMap[id];
+    if (idx !== undefined && navItems[idx]) navItems[idx].classList.add('active');
+    const titles = {
+      'dashboard': 'Claude Hub — Dashboard',
+      'mod-getting-started': 'Module 01 — Getting started',
+      'mod-prompting': 'Module 02 — Prompting guide',
+      'mod-use-cases': 'Module 03 — Use cases',
+      'mod-tips': 'Module 04 — Tips & tricks',
+      'mod-brand': 'Module 05 — WCO brand skills',
+      'mod-ia-brand': 'Module 06 — Integrated Advisory™',
+      'mod-usage': 'Module 07 — Usage & credits',
+      'mod-usage-report': 'Module 07 — Usage report guide',
+    };
+    document.getElementById('topbar-title').textContent = titles[id] || 'Claude Hub';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleAccordion(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = body.classList.contains('open');
+    document.querySelectorAll('.accordion-body').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.accordion-trigger').forEach(b => b.classList.remove('open'));
+    if (!isOpen) { body.classList.add('open'); btn.classList.add('open'); }
+  }
+
+  function updateDate() {
+    const now = new Date();
+    const opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+    document.getElementById('topbar-date').textContent = now.toLocaleDateString('en-CA', opts);
+  }
+  updateDate();
+
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', e => e.preventDefault());
+  });
+</script>
+
+</body>
+</html>
